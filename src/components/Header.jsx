@@ -35,7 +35,7 @@ export default function Header({ user, notifications = 0 }) {
       initial={{ opacity: 0, y: -12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="mb-4"
+      className="mb-4 relative z-[60]"
     >
       <div className="header-glass-bar flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-gradient-to-r from-[#141414]/90 via-[#111111]/95 to-[#141414]/90 px-3 py-2.5 backdrop-blur-xl sm:px-4 sm:py-3">
         {/* Left — greeting */}

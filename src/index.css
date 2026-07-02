@@ -224,6 +224,10 @@ body {
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1), 0 0 20px rgba(139, 92, 246, 0.08);
 }
 
+.notification-panel {
+  backdrop-filter: blur(16px);
+}
+
 .neon-glass-icon {
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
