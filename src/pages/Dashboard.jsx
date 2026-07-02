@@ -6,6 +6,7 @@ import {
   Shield, TrendingUp, Zap, Headphones, Share2,
 } from 'lucide-react';
 import { userAPI } from '../api';
+import { getBtcMarket } from '../services/marketService';
 import { useAuth } from '../context/AuthContext';
 import Header, { CountdownTimer } from '../components/Header';
 import BottomNav from '../components/BottomNav';
@@ -40,7 +41,7 @@ export default function Dashboard() {
   const loadMarket = useCallback(async (tf = timeframe) => {
     setMarketLoading(true);
     try {
-      const { data: mkt } = await userAPI.getMarket(tf);
+      const mkt = await getBtcMarket(tf);
       setMarket(mkt);
       setMarketError('');
     } catch {
@@ -155,7 +156,14 @@ export default function Dashboard() {
               <p className="text-xl font-bold text-white">
                 ${parseFloat(profile?.available_balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </p>
-              <p className="text-[10px] text-gray-500">~{data?.btc_equivalent || 0} BTC</p>
+              <p className="text-[10px] text-gray-500">
+                ~{(
+                  data?.btc_equivalent
+                  || (market?.price && profile?.available_balance
+                    ? (parseFloat(profile.available_balance) / market.price).toFixed(6)
+                    : 0)
+                )} BTC
+              </p>
             </div>
             <div className="rounded-xl border border-cs-border bg-cs-dark p-2 text-center">
               <p className="mb-1 text-[8px] text-gray-500">Next Stack Available In</p>
