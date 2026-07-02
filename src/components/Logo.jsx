@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import logoImg from '../assets/logo.jpeg';
 
 const sizeMap = {
-  lg: 'h-20 w-auto max-w-[200px] sm:h-24 sm:max-w-[220px]',
+  lg: 'h-24 w-auto max-w-[240px] sm:h-28 sm:max-w-[280px]',
   md: 'h-14 w-auto max-w-[150px] sm:h-16 sm:max-w-[170px]',
   sm: 'h-10 w-auto max-w-[110px]',
   xs: 'h-8 w-auto max-w-[90px]',

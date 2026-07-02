@@ -205,7 +205,21 @@ body {
   100% { background-position: -200% 0; }
 }
 
-/* Neon glass icon effects */
+.auth-page {
+  isolation: isolate;
+}
+
+.auth-glass-card {
+  transition: box-shadow 0.3s ease;
+}
+.auth-glass-card:hover {
+  box-shadow: 0 0 50px rgba(139, 92, 246, 0.12), 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.auth-input:focus {
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1), 0 0 20px rgba(139, 92, 246, 0.08);
+}
+
 .neon-glass-icon {
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
@@ -223,6 +237,18 @@ body {
 @keyframes neon-float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-3px); }
+}
+
+/* Stat card neon charts */
+.stat-neon-card {
+  backdrop-filter: blur(8px);
+}
+.stat-neon-chart .recharts-surface {
+  overflow: visible;
+}
+.stat-neon-chart path.recharts-area-curve {
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .stack-balance-card {

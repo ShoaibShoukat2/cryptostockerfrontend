@@ -280,9 +280,9 @@ export default function Dashboard() {
             index={0}
             subValue={totalBtcEquivalent ? `≈ ${totalBtcEquivalent} BTC` : null}
           />
-          <StatCard title="Total Deposit" value={parseFloat(profile?.total_deposit || 0)} color="green" trend={data?.stats_trends?.deposit} index={1} />
-          <StatCard title="Total Withdraw" value={parseFloat(profile?.total_withdraw || 0)} color="orange" trend={data?.stats_trends?.withdraw} index={2} />
-          <StatCard title="Total Profit" value={parseFloat(profile?.total_profit || 0)} color="red" trend={data?.stats_trends?.profit} index={3} />
+          <StatCard title="Total Deposit" value={parseFloat(profile?.total_deposit || 0)} color="green" trend={data?.stats_trends?.deposit} index={1} subValue="All Time" />
+          <StatCard title="Total Withdraw" value={parseFloat(profile?.total_withdraw || 0)} color="orange" trend={data?.stats_trends?.withdraw} index={2} subValue="All Time" />
+          <StatCard title="Total Profit" value={parseFloat(profile?.total_profit || 0)} color="red" trend={data?.stats_trends?.profit} index={3} subValue="All Time" />
         </div>
 
         {/* Refer & Earn */}

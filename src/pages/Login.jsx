@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, EyeOff, LogIn } from 'lucide-react';
+import { Eye, EyeOff, LogIn, User, Lock } from 'lucide-react';
 import AuthLayout from '../components/AuthLayout';
+import { AuthCard, AuthInput, AuthError, AuthSubmitButton } from '../components/AuthForm';
 import { useAuth } from '../context/AuthContext';
-
-const inputClass =
-  'w-full min-w-0 bg-cs-dark border border-cs-border rounded-xl px-4 py-3 text-base sm:text-sm focus:outline-none focus:border-cs-purple transition-colors';
 
 export default function Login() {
   const { login } = useAuth();
@@ -33,70 +31,61 @@ export default function Login() {
   };
 
   return (
-    <AuthLayout>
-      <div className="card-dark w-full p-5 glow-purple sm:p-6 md:p-8">
-        <h2 className="mb-1 text-center text-lg font-bold sm:text-xl">Welcome Back</h2>
-        <p className="mb-6 text-center text-sm text-gray-500">Sign in to your account</p>
-
-        {error && (
-          <div className="mb-4 rounded-lg border border-cs-red/30 bg-cs-red/10 p-3 text-sm text-cs-red">
-            {error}
-          </div>
-        )}
+    <AuthLayout variant="purple">
+      <AuthCard
+        title="Welcome Back"
+        subtitle="Sign in to your account"
+        icon={LogIn}
+        variant="purple"
+      >
+        <AuthError message={error} />
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1 block text-xs text-gray-400">Username</label>
-            <input
-              type="text"
-              value={form.username}
-              onChange={(e) => setForm({ ...form, username: e.target.value })}
-              className={inputClass}
-              placeholder="Enter username"
-              autoComplete="username"
-              required
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-xs text-gray-400">Password</label>
-            <div className="relative">
-              <input
-                type={showPass ? 'text' : 'password'}
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className={`${inputClass} pr-11`}
-                placeholder="Enter password"
-                autoComplete="current-password"
-                required
-              />
+          <AuthInput
+            label="Username"
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
+            placeholder="Enter your username"
+            autoComplete="username"
+            required
+            icon={User}
+            delay={0}
+          />
+
+          <AuthInput
+            label="Password"
+            type={showPass ? 'text' : 'password'}
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            placeholder="Enter your password"
+            autoComplete="current-password"
+            required
+            icon={Lock}
+            delay={0.08}
+            suffix={(
               <button
                 type="button"
                 onClick={() => setShowPass(!showPass)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 transition-colors hover:text-purple-400"
                 aria-label={showPass ? 'Hide password' : 'Show password'}
               >
                 {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
-            </div>
-          </div>
+            )}
+          />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="gradient-btn flex w-full items-center justify-center gap-2 rounded-xl py-3.5 font-bold text-white disabled:opacity-50"
-          >
-            <LogIn size={18} />
-            {loading ? 'Signing in...' : 'Sign In'}
-          </button>
+          <AuthSubmitButton loading={loading} loadingText="Signing in..." icon={LogIn} delay={0.16}>
+            Sign In
+          </AuthSubmitButton>
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-500">
           Don&apos;t have an account?{' '}
-          <Link to="/register" className="font-semibold text-cs-purple hover:underline">
+          <Link to="/register" className="font-semibold text-purple-400 transition-colors hover:text-purple-300 hover:underline">
             Register
           </Link>
         </p>
-      </div>
+      </AuthCard>
     </AuthLayout>
   );
 }
