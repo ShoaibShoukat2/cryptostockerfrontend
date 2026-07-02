@@ -39,7 +39,7 @@ export default function Transactions() {
   }, [refreshUser]);
 
   return (
-    <div className="min-h-screen bg-black pb-20">
+    <div className="min-h-screen bg-cs-mesh pb-20">
       <div className="mx-auto max-w-lg px-4 pt-4">
         <Header user={user} />
         <div className="card-dark p-4">

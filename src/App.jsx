@@ -14,7 +14,7 @@ function PrivateRoute({ children, adminOnly = false }) {
   const { user, loading, isAdmin } = useAuth();
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-cs-mesh flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-cs-purple border-t-transparent rounded-full animate-spin" />
       </div>
     );

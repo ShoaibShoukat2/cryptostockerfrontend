@@ -61,7 +61,7 @@ export default function Withdraw() {
   };
 
   return (
-    <div className="min-h-screen bg-black pb-20">
+    <div className="min-h-screen bg-cs-mesh pb-20">
       <div className="mx-auto max-w-lg px-4 pt-4">
         <Header user={user} />
 

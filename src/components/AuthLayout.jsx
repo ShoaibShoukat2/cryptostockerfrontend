@@ -7,7 +7,7 @@ export default function AuthLayout({ children, variant = 'purple' }) {
     : 'bg-cs-purple/10';
 
   return (
-    <div className="min-h-dvh w-full overflow-x-hidden overflow-y-auto bg-black">
+    <div className="min-h-dvh w-full overflow-x-hidden overflow-y-auto bg-cs-mesh">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className={`absolute top-1/4 left-1/4 h-48 w-48 rounded-full blur-3xl sm:h-64 sm:w-64 ${accent}`} />
         <div className="absolute bottom-1/4 right-1/4 h-48 w-48 rounded-full bg-cs-gold/10 blur-3xl sm:h-64 sm:w-64" />

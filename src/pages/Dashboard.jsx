@@ -12,6 +12,8 @@ import Header, { CountdownTimer } from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import StatCard from '../components/StatCard';
 import CandlestickChart from '../components/CandlestickChart';
+import AnimatedValue from '../components/AnimatedValue';
+import heroImg from '../assets/hero.png';
 
 export default function Dashboard() {
   const { user, refreshUser } = useAuth();
@@ -113,14 +115,14 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-black">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-cs-purple border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center bg-cs-mesh">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 spinner-glow" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black pb-20">
+    <div className="min-h-screen bg-cs-mesh pb-20">
       <div className="mx-auto max-w-lg px-4 pt-4">
         <Header user={profile} notifications={data?.unread_notifications || 0} />
 
@@ -132,30 +134,33 @@ export default function Dashboard() {
         )}
 
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="card-dark glow-purple relative mb-4 overflow-hidden p-4"
         >
           <div className="absolute -right-4 -top-4 h-32 w-32 rounded-full bg-cs-purple/10 blur-2xl" />
+          <div className="absolute -bottom-4 -left-4 h-24 w-24 rounded-full bg-cs-gold/5 blur-2xl" />
           <div className="flex items-start gap-3">
-            <div className="float-anim">
-              <div
-                className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-cs-purple/50 bg-gradient-to-br from-cs-purple to-cs-purple-dark text-2xl font-black"
-                style={{ boxShadow: '0 0 30px rgba(139,92,246,0.4)' }}
-              >
-                C
-              </div>
+            <div className="hero-graphic-wrap shrink-0">
+              <img
+                src={heroImg}
+                alt=""
+                className="hero-img h-20 w-20 object-contain sm:h-24 sm:w-24"
+                draggable={false}
+              />
             </div>
             <div className="min-w-0 flex-1">
               <div className="mb-1 flex items-center gap-2">
-                <h3 className="text-sm font-bold">STACK YOUR BALANCE</h3>
+                <h3 className="text-sm font-bold tracking-wide">STACK YOUR BALANCE</h3>
                 <span className="rounded bg-cs-purple/20 px-1.5 py-0.5 text-[9px] font-bold text-cs-purple">24H</span>
               </div>
               <p className="mb-2 text-[10px] text-gray-400">Stack your balance and earn daily profits.</p>
               <p className="text-xs text-gray-400">Available Balance</p>
-              <p className="text-xl font-bold text-white">
-                ${parseFloat(profile?.available_balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-              </p>
+              <AnimatedValue
+                value={parseFloat(profile?.available_balance || 0)}
+                className="text-xl font-bold text-white"
+              />
               <p className="text-[10px] text-gray-500">
                 ~{(
                   data?.btc_equivalent
@@ -186,16 +191,28 @@ export default function Dashboard() {
         </motion.div>
 
         <div className="mb-3 grid grid-cols-2 gap-3">
-          <button type="button" onClick={() => navigate('/deposit')} className="card-dark glow-purple p-3 text-left transition-colors hover:border-cs-purple/50">
-            <ArrowDownToLine size={22} className="mb-2 text-cs-purple" />
+          <motion.button
+            type="button"
+            onClick={() => navigate('/deposit')}
+            whileHover={{ y: -3, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="card-dark card-interactive glow-purple p-3 text-left"
+          >
+            <ArrowDownToLine size={22} className="mb-2 text-cs-purple drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]" />
             <p className="text-sm font-bold">Deposit</p>
             <p className="text-[10px] text-gray-500">Add funds to your account</p>
-          </button>
-          <button type="button" onClick={() => navigate('/withdraw')} className="card-dark glow-orange p-3 text-left transition-colors hover:border-cs-orange/50">
-            <ArrowUpFromLine size={22} className="mb-2 text-cs-orange" />
+          </motion.button>
+          <motion.button
+            type="button"
+            onClick={() => navigate('/withdraw')}
+            whileHover={{ y: -3, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="card-dark card-interactive glow-orange p-3 text-left"
+          >
+            <ArrowUpFromLine size={22} className="mb-2 text-cs-orange drop-shadow-[0_0_8px_rgba(249,115,22,0.6)]" />
             <p className="text-sm font-bold">Withdraw</p>
             <p className="text-[10px] text-gray-500">Withdraw your earnings</p>
-          </button>
+          </motion.button>
         </div>
 
         <div className="mb-4 grid grid-cols-2 gap-3">
@@ -218,10 +235,10 @@ export default function Dashboard() {
         </div>
 
         <div className="mb-4 grid grid-cols-2 gap-3">
-          <StatCard title="Total Balance" value={parseFloat(profile?.total_balance || 0)} color="purple" trend={data?.stats_trends?.balance} />
-          <StatCard title="Total Deposit" value={parseFloat(profile?.total_deposit || 0)} color="green" trend={data?.stats_trends?.deposit} />
-          <StatCard title="Total Withdraw" value={parseFloat(profile?.total_withdraw || 0)} color="orange" trend={data?.stats_trends?.withdraw} />
-          <StatCard title="Total Profit" value={parseFloat(profile?.total_profit || 0)} color="red" trend={data?.stats_trends?.profit} />
+          <StatCard title="Total Balance" value={parseFloat(profile?.total_balance || 0)} color="purple" trend={data?.stats_trends?.balance} index={0} />
+          <StatCard title="Total Deposit" value={parseFloat(profile?.total_deposit || 0)} color="green" trend={data?.stats_trends?.deposit} index={1} />
+          <StatCard title="Total Withdraw" value={parseFloat(profile?.total_withdraw || 0)} color="orange" trend={data?.stats_trends?.withdraw} index={2} />
+          <StatCard title="Total Profit" value={parseFloat(profile?.total_profit || 0)} color="red" trend={data?.stats_trends?.profit} index={3} />
         </div>
 
         <motion.div
@@ -347,16 +364,23 @@ export default function Dashboard() {
 
         <div className="mb-4 grid grid-cols-4 gap-2">
           {[
-            { icon: Shield, label: 'Secure & Safe', sub: 'Bank-level security' },
-            { icon: TrendingUp, label: 'Daily Profits', sub: 'Earn consistent returns' },
-            { icon: Zap, label: 'Instant Withdraw', sub: 'Withdraw anytime' },
-            { icon: Headphones, label: '24/7 Support', sub: 'Always here to help' },
-          ].map(({ icon: Icon, label, sub }) => (
-            <div key={label} className="p-2 text-center">
-              <Icon size={18} className="mx-auto mb-1 text-cs-purple" />
+            { icon: Shield, label: 'Secure & Safe', sub: 'Bank-level security', color: 'text-cs-purple' },
+            { icon: TrendingUp, label: 'Daily Profits', sub: 'Earn consistent returns', color: 'text-cs-green' },
+            { icon: Zap, label: 'Instant Withdraw', sub: 'Withdraw anytime', color: 'text-cs-gold' },
+            { icon: Headphones, label: '24/7 Support', sub: 'Always here to help', color: 'text-cs-orange' },
+          ].map(({ icon: Icon, label, sub, color }, i) => (
+            <motion.div
+              key={label}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 + i * 0.08 }}
+              whileHover={{ y: -2 }}
+              className="rounded-xl border border-cs-border/50 bg-cs-card/50 p-2 text-center backdrop-blur-sm"
+            >
+              <Icon size={18} className={`mx-auto mb-1 ${color} drop-shadow-[0_0_6px_currentColor]`} />
               <p className="text-[8px] font-semibold">{label}</p>
               <p className="text-[7px] text-gray-600">{sub}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

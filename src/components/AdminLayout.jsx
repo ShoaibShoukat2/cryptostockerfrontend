@@ -30,7 +30,7 @@ export default function AdminLayout({
       {/* Sidebar */}
       <aside className={`fixed left-0 top-0 z-50 flex h-full w-64 flex-col border-r border-cs-border bg-cs-dark transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="border-b border-cs-border p-4">
-          <Logo size="sm" />
+          <Logo size="sm" centered={false} showTagline={false} />
           <div className="mt-2 flex items-center gap-2">
             <Shield size={14} className="text-cs-red" />
             <span className="text-xs font-bold text-cs-red">ADMIN PANEL</span>

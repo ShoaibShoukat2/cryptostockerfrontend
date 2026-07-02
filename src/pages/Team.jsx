@@ -47,14 +47,14 @@ export default function Team() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-black">
+      <div className="flex min-h-screen items-center justify-center bg-cs-mesh">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-cs-purple border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black pb-20">
+    <div className="min-h-screen bg-cs-mesh pb-20">
       <div className="mx-auto max-w-lg px-4 pt-4">
         <Header user={user} notifications={data?.unread_notifications || 0} />
         <div className="card-dark glow-purple mb-4 p-6">
