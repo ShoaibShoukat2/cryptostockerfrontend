@@ -8,34 +8,40 @@ export default function Header({ user, notifications = 0 }) {
   const name = user?.user?.first_name || user?.user?.username || user?.first_name || user?.username || 'User';
 
   return (
-    <header className="mb-5">
-      <div className="mb-3 flex items-center justify-end gap-2 sm:gap-3">
-        <NotificationBell initialCount={notifications} />
-        <div className="flex items-center gap-2">
+    <header className="mb-4">
+      <div className="flex items-center justify-between gap-2">
+        <div className="w-[72px] shrink-0 sm:w-20" />
+
+        <div className="flex flex-1 justify-center">
+          <Logo size="sm" centered showTagline={false} />
+        </div>
+
+        <div className="flex w-[72px] shrink-0 items-center justify-end gap-1.5 sm:w-auto sm:gap-2">
+          <NotificationBell initialCount={notifications} />
           <motion.div
-            whileHover={{ scale: 1.08 }}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-cs-purple to-cs-purple-dark ring-2 ring-cs-purple/30"
-            style={{ boxShadow: '0 0 15px rgba(139,92,246,0.4)' }}
+            whileHover={{ scale: 1.05 }}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-cs-purple to-cs-purple-dark ring-1 ring-cs-purple/30 sm:h-9 sm:w-9"
+            style={{ boxShadow: '0 0 12px rgba(139,92,246,0.35)' }}
           >
-            <User size={16} />
+            <User size={15} />
           </motion.div>
-          <div className="hidden text-right sm:block">
-            <p className="text-xs font-semibold">Hi, {name} 👋</p>
-            <p className="text-[9px] text-gray-500">Welcome Back!</p>
-          </div>
+        </div>
+      </div>
+
+      <div className="mt-2 flex items-center justify-end gap-2 pr-0.5">
+        <div className="hidden text-right sm:block">
+          <p className="text-xs font-semibold">Hi, {name} 👋</p>
+          <p className="text-[9px] text-gray-500">Welcome Back!</p>
         </div>
         <motion.span
-          initial={{ scale: 0.8, opacity: 0 }}
+          initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="rounded-full bg-gradient-to-r from-cs-purple via-cs-purple-neon to-cs-gold px-2.5 py-0.5 text-[9px] font-bold shadow-lg"
-          style={{ boxShadow: '0 0 12px rgba(245,158,11,0.3)' }}
+          transition={{ delay: 0.2 }}
+          className="rounded-full bg-gradient-to-r from-cs-purple to-cs-gold px-2 py-0.5 text-[9px] font-bold"
         >
           VIP {user?.vip_level || 1}
         </motion.span>
       </div>
-
-      <Logo size="md" centered showTagline />
     </header>
   );
 }

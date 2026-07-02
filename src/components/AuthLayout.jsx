@@ -19,8 +19,8 @@ export default function AuthLayout({ children, variant = 'purple' }) {
           animate={{ opacity: 1, y: 0 }}
           className="w-full min-w-0"
         >
-          <div className="mb-6 sm:mb-8">
-            <Logo size="lg" />
+          <div className="mb-5 sm:mb-6">
+            <Logo size="md" />
           </div>
           {children}
         </motion.div>

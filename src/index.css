@@ -148,7 +148,7 @@ body {
 /* Logo animations */
 .logo-glow-wrap {
   position: relative;
-  padding: 4px;
+  padding: 2px;
 }
 
 .logo-img {
@@ -162,17 +162,17 @@ body {
   animation: breathe-glow 3s ease-in-out infinite;
 }
 .logo-ring-purple {
-  top: -8px;
-  left: -8px;
-  width: 40%;
-  height: 60%;
+  top: -4px;
+  left: -4px;
+  width: 35%;
+  height: 50%;
   background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
 }
 .logo-ring-gold {
-  bottom: -8px;
-  right: -8px;
-  width: 40%;
-  height: 60%;
+  bottom: -4px;
+  right: -4px;
+  width: 35%;
+  height: 50%;
   background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, transparent 70%);
   animation-delay: 1.5s;
 }
