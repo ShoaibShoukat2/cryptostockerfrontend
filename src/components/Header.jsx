@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { User } from 'lucide-react';
-import { Logo } from './Logo';
 import NotificationBell from './NotificationBell';
 
 export default function Header({ user, notifications = 0 }) {
@@ -9,26 +8,15 @@ export default function Header({ user, notifications = 0 }) {
 
   return (
     <header className="mb-4">
-      <div className="flex items-center justify-between gap-2">
-        <div className="w-[72px] shrink-0 sm:w-20" />
-
-        <div className="flex flex-1 justify-center">
-          <Logo size="sm" centered showTagline={false} />
-        </div>
-
-        <div className="flex w-[72px] shrink-0 items-center justify-end gap-1.5 sm:w-auto sm:gap-2">
-          <NotificationBell initialCount={notifications} />
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-cs-purple to-cs-purple-dark ring-1 ring-cs-purple/30 sm:h-9 sm:w-9"
-            style={{ boxShadow: '0 0 12px rgba(139,92,246,0.35)' }}
-          >
-            <User size={15} />
-          </motion.div>
-        </div>
-      </div>
-
-      <div className="mt-2 flex items-center justify-end gap-2 pr-0.5">
+      <div className="flex items-center justify-end gap-2 sm:gap-3">
+        <NotificationBell initialCount={notifications} />
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-cs-purple to-cs-purple-dark ring-1 ring-cs-purple/30 sm:h-9 sm:w-9"
+          style={{ boxShadow: '0 0 12px rgba(139,92,246,0.35)' }}
+        >
+          <User size={15} />
+        </motion.div>
         <div className="hidden text-right sm:block">
           <p className="text-xs font-semibold">Hi, {name} 👋</p>
           <p className="text-[9px] text-gray-500">Welcome Back!</p>
