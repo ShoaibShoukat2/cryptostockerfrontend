@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Wallet, ArrowDownToLine, ArrowUpFromLine, Clock, Copy, Gift,
-  Shield, TrendingUp, Zap, Headphones, Share2,
+  Wallet, Copy, Gift, Shield, TrendingUp, Zap, Headphones,
+  Share2, ChevronRight, Maximize2, Info, Users,
 } from 'lucide-react';
 import { userAPI } from '../api';
 import { getBtcMarket } from '../services/marketService';
@@ -13,7 +13,10 @@ import BottomNav from '../components/BottomNav';
 import StatCard from '../components/StatCard';
 import CandlestickChart from '../components/CandlestickChart';
 import AnimatedValue from '../components/AnimatedValue';
-import heroImg from '../assets/hero.png';
+import {
+  IconBox, DepositIcon, WithdrawIcon, PendingDepositIcon, PendingWithdrawIcon,
+} from '../components/DashboardIcons';
+import logoImg from '../assets/logo.jpeg';
 
 export default function Dashboard() {
   const { user, refreshUser } = useAuth();
@@ -113,6 +116,15 @@ export default function Dashboard() {
 
   const profile = data?.profile || user;
 
+  const btcEquivalent = data?.btc_equivalent
+    || (market?.price && profile?.available_balance
+      ? (parseFloat(profile.available_balance) / market.price).toFixed(3)
+      : '0.000');
+
+  const totalBtcEquivalent = market?.price && profile?.total_balance
+    ? (parseFloat(profile.total_balance) / market.price).toFixed(3)
+    : null;
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-cs-mesh">
@@ -133,158 +145,225 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* Stack Your Balance Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="card-dark glow-purple relative mb-4 overflow-hidden p-4"
+          className="card-dark stack-balance-card relative mb-4 overflow-hidden p-4"
         >
-          <div className="absolute -right-4 -top-4 h-32 w-32 rounded-full bg-cs-purple/10 blur-2xl" />
-          <div className="absolute -bottom-4 -left-4 h-24 w-24 rounded-full bg-cs-gold/5 blur-2xl" />
-          <div className="flex items-start gap-3">
-            <div className="hero-graphic-wrap shrink-0">
-              <img
-                src={heroImg}
-                alt=""
-                className="hero-img h-20 w-20 object-contain sm:h-24 sm:w-24"
-                draggable={false}
-              />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="mb-1 flex items-center gap-2">
-                <h3 className="text-sm font-bold tracking-wide">STACK YOUR BALANCE</h3>
-                <span className="rounded bg-cs-purple/20 px-1.5 py-0.5 text-[9px] font-bold text-cs-purple">24H</span>
+          <div className="flex gap-3">
+            {/* Left: Logo emblem */}
+            <div className="shrink-0">
+              <div className="stack-emblem float-anim h-28 w-24 overflow-hidden rounded-xl sm:h-32 sm:w-28">
+                <img
+                  src={logoImg}
+                  alt="Crypto Stacker"
+                  className="h-[200%] w-full object-cover object-top"
+                  draggable={false}
+                />
               </div>
-              <p className="mb-2 text-[10px] text-gray-400">Stack your balance and earn daily profits.</p>
-              <p className="text-xs text-gray-400">Available Balance</p>
+            </div>
+
+            {/* Center: Balance info */}
+            <div className="min-w-0 flex-1">
+              <div className="mb-1 flex flex-wrap items-center gap-1.5">
+                <h3 className="text-xs font-bold tracking-wide sm:text-sm">STACK YOUR BALANCE</h3>
+                <span className="rounded bg-cs-purple/25 px-1.5 py-0.5 text-[8px] font-bold text-cs-purple">24H</span>
+              </div>
+              <p className="mb-2 text-[9px] leading-snug text-gray-400 sm:text-[10px]">
+                Stack your balance and earn daily profits.
+              </p>
+              <p className="text-[9px] italic text-gray-500">Available Balance</p>
               <AnimatedValue
                 value={parseFloat(profile?.available_balance || 0)}
-                className="text-xl font-bold text-white"
+                className="text-lg font-bold text-white sm:text-xl"
               />
-              <p className="text-[10px] text-gray-500">
-                ~{(
-                  data?.btc_equivalent
-                  || (market?.price && profile?.available_balance
-                    ? (parseFloat(profile.available_balance) / market.price).toFixed(6)
-                    : 0)
-                )} BTC
+              <p className="flex items-center gap-1 text-[9px] text-gray-400">
+                <span className="text-cs-gold">₿</span>
+                ≈ {btcEquivalent} BTC
               </p>
             </div>
-            <div className="rounded-xl border border-cs-border bg-cs-dark p-2 text-center">
-              <p className="mb-1 text-[8px] text-gray-500">Next Stack Available In</p>
-              <CountdownTimer seconds={profile?.next_stack_in_seconds || 0} />
+
+            {/* Right: Timer + Stack button */}
+            <div className="flex w-[90px] shrink-0 flex-col gap-2 sm:w-[100px]">
+              <div className="rounded-xl border border-cs-border/80 bg-cs-dark/80 p-2 text-center backdrop-blur-sm">
+                <p className="mb-1 flex items-center justify-center gap-0.5 text-[7px] text-gray-500">
+                  Next Stack Available In
+                  <Info size={8} className="text-gray-600" />
+                </p>
+                <CountdownTimer seconds={profile?.next_stack_in_seconds || 0} showLabels />
+              </div>
+              <button
+                type="button"
+                onClick={handleStack}
+                disabled={stacking || !profile?.can_stack}
+                className="gradient-btn-cta flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-2.5 text-[10px] font-bold text-white disabled:opacity-40 sm:text-xs"
+              >
+                <Wallet size={14} />
+                {stacking ? '...' : profile?.can_stack ? 'Stack Now' : 'Wait 24H'}
+              </button>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleStack}
-            disabled={stacking || !profile?.can_stack}
-            className="gradient-btn mt-4 flex w-full items-center justify-center gap-2 rounded-xl py-3 font-bold text-white disabled:opacity-40"
-          >
-            <Wallet size={18} />
-            {stacking ? 'Stacking...' : profile?.can_stack ? 'Stack Now' : 'Stacked - Wait 24H'}
-          </button>
-          <p className="mt-2 text-center text-[9px] text-gray-600">
+          <p className="mt-3 text-right text-[8px] leading-relaxed text-gray-600 sm:text-[9px]">
             You can stack your balance once every 24 hours. After stacking, you will start earning daily profits.
           </p>
         </motion.div>
 
+        {/* Deposit & Withdraw */}
         <div className="mb-3 grid grid-cols-2 gap-3">
           <motion.button
             type="button"
             onClick={() => navigate('/deposit')}
-            whileHover={{ y: -3, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="card-dark card-interactive glow-purple p-3 text-left"
+            className="action-card card-dark glow-purple flex items-center gap-3 p-3 text-left"
           >
-            <ArrowDownToLine size={22} className="mb-2 text-cs-purple drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]" />
-            <p className="text-sm font-bold">Deposit</p>
-            <p className="text-[10px] text-gray-500">Add funds to your account</p>
+            <IconBox variant="purple" size="lg">
+              <DepositIcon />
+            </IconBox>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold">Deposit</p>
+              <p className="text-[9px] text-gray-500">Add funds to your account</p>
+            </div>
+            <ChevronRight size={16} className="shrink-0 text-gray-600" />
           </motion.button>
+
           <motion.button
             type="button"
             onClick={() => navigate('/withdraw')}
-            whileHover={{ y: -3, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="card-dark card-interactive glow-orange p-3 text-left"
+            className="action-card card-dark glow-orange flex items-center gap-3 p-3 text-left"
           >
-            <ArrowUpFromLine size={22} className="mb-2 text-cs-orange drop-shadow-[0_0_8px_rgba(249,115,22,0.6)]" />
-            <p className="text-sm font-bold">Withdraw</p>
-            <p className="text-[10px] text-gray-500">Withdraw your earnings</p>
+            <IconBox variant="orange" size="lg">
+              <WithdrawIcon />
+            </IconBox>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold">Withdraw</p>
+              <p className="text-[9px] text-gray-500">Withdraw your earnings</p>
+            </div>
+            <ChevronRight size={16} className="shrink-0 text-gray-600" />
           </motion.button>
         </div>
 
+        {/* Pending */}
         <div className="mb-4 grid grid-cols-2 gap-3">
-          <div className="card-dark glow-red p-3">
-            <Clock size={18} className="mb-1 text-cs-red" />
-            <p className="text-[10px] text-gray-400">Pending Deposits</p>
-            <p className="text-sm font-bold text-cs-red">
-              ${(data?.pending_deposits?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-            </p>
-            <p className="text-[9px] text-gray-500">{data?.pending_deposits?.count || 0} Requests</p>
+          <div className="pending-card card-dark glow-red flex items-center gap-2.5 p-3">
+            <IconBox variant="red" size="sm">
+              <PendingDepositIcon />
+            </IconBox>
+            <div className="min-w-0">
+              <p className="text-[9px] text-gray-400">Pending Deposits</p>
+              <p className="text-sm font-bold text-cs-red">
+                ${(data?.pending_deposits?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </p>
+              <p className="text-[8px] font-medium text-cs-red/80">
+                {data?.pending_deposits?.count || 0} Requests
+              </p>
+            </div>
           </div>
-          <div className="card-dark glow-gold p-3">
-            <Clock size={18} className="mb-1 text-cs-gold" />
-            <p className="text-[10px] text-gray-400">Pending Withdrawals</p>
-            <p className="text-sm font-bold text-cs-gold">
-              ${(data?.pending_withdrawals?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-            </p>
-            <p className="text-[9px] text-gray-500">{data?.pending_withdrawals?.count || 0} Request</p>
+
+          <div className="pending-card card-dark glow-gold flex items-center gap-2.5 p-3">
+            <IconBox variant="gold" size="sm">
+              <PendingWithdrawIcon />
+            </IconBox>
+            <div className="min-w-0">
+              <p className="text-[9px] text-gray-400">Pending Withdrawals</p>
+              <p className="text-sm font-bold text-cs-gold">
+                ${(data?.pending_withdrawals?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </p>
+              <p className="text-[8px] font-medium text-cs-gold/80">
+                {data?.pending_withdrawals?.count || 0} Request
+              </p>
+            </div>
           </div>
         </div>
 
+        {/* Stats */}
         <div className="mb-4 grid grid-cols-2 gap-3">
-          <StatCard title="Total Balance" value={parseFloat(profile?.total_balance || 0)} color="purple" trend={data?.stats_trends?.balance} index={0} />
+          <StatCard
+            title="Total Balance"
+            value={parseFloat(profile?.total_balance || 0)}
+            color="purple"
+            trend={data?.stats_trends?.balance}
+            index={0}
+            subValue={totalBtcEquivalent ? `≈ ${totalBtcEquivalent} BTC` : null}
+          />
           <StatCard title="Total Deposit" value={parseFloat(profile?.total_deposit || 0)} color="green" trend={data?.stats_trends?.deposit} index={1} />
           <StatCard title="Total Withdraw" value={parseFloat(profile?.total_withdraw || 0)} color="orange" trend={data?.stats_trends?.withdraw} index={2} />
           <StatCard title="Total Profit" value={parseFloat(profile?.total_profit || 0)} color="red" trend={data?.stats_trends?.profit} index={3} />
         </div>
 
+        {/* Refer & Earn */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="card-dark glow-purple mb-4 p-4"
+          className="card-dark glow-purple mb-4 overflow-hidden p-4"
         >
-          <div className="mb-3 flex items-center gap-2">
-            <Gift size={20} className="text-cs-gold" />
-            <h3 className="font-bold">Refer & Earn</h3>
+          <div className="flex gap-4">
+            {/* Left */}
+            <div className="min-w-0 flex-1">
+              <div className="refer-gift-area mb-3 flex h-20 items-center justify-center rounded-xl">
+                <Gift size={40} className="text-cs-purple drop-shadow-[0_0_12px_rgba(139,92,246,0.6)]" />
+              </div>
+              <p className="mb-2 text-[10px] text-gray-400">Your Referral Code</p>
+              <div className="mb-3 flex gap-2">
+                <div className="flex-1 rounded-xl border border-cs-border bg-cs-dark px-3 py-2 font-mono text-sm font-bold text-cs-gold">
+                  {profile?.referral_code || '------'}
+                </div>
+                <button
+                  type="button"
+                  onClick={copyReferral}
+                  className="flex items-center gap-1 rounded-xl border border-cs-purple/30 bg-cs-purple/15 px-3 text-xs font-semibold text-cs-purple"
+                >
+                  <Copy size={13} /> {copied ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={inviteFriends}
+                className="gradient-btn-cta flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold text-white"
+              >
+                <Share2 size={16} /> Invite Friends
+              </button>
+            </div>
+
+            {/* Right stats */}
+            <div className="w-[42%] shrink-0 border-l border-cs-border/50 pl-3">
+              <div className="mb-3 space-y-2">
+                <div>
+                  <p className="text-base font-bold text-cs-purple">{profile?.total_referrals || 0}</p>
+                  <p className="text-[8px] text-gray-500">Total Referrals</p>
+                </div>
+                <div>
+                  <p className="text-base font-bold text-cs-green">{profile?.active_referrals || 0}</p>
+                  <p className="text-[8px] text-gray-500">Active Referrals</p>
+                </div>
+                <div>
+                  <p className="text-base font-bold text-cs-gold">${parseFloat(profile?.total_referral_bonus || 0).toFixed(2)}</p>
+                  <p className="text-[8px] text-gray-500">Referral Bonus</p>
+                </div>
+              </div>
+              {data?.referral_levels?.map((level) => {
+                const levelColors = ['purple', 'blue', 'green'];
+                const variant = levelColors[(level.level - 1) % 3];
+                return (
+                  <div key={level.level} className="flex items-center justify-between border-t border-cs-border/50 py-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <IconBox variant={variant} size="sm">
+                        <Users size={12} className={variant === 'purple' ? 'text-cs-purple' : variant === 'blue' ? 'text-blue-400' : 'text-cs-green'} />
+                      </IconBox>
+                      <span className="text-[9px] text-gray-400">Level {level.level}</span>
+                    </div>
+                    <span className="text-[9px] font-semibold text-cs-green">${level.earnings.toFixed(2)}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-          <div className="mb-3 flex gap-2">
-            <div className="flex-1 rounded-xl border border-cs-border bg-cs-dark px-3 py-2 font-mono text-sm text-cs-gold">
-              {profile?.referral_code || '------'}
-            </div>
-            <button type="button" onClick={copyReferral} className="flex items-center gap-1 rounded-xl bg-cs-purple/20 px-4 text-sm font-semibold text-cs-purple">
-              <Copy size={14} /> {copied ? 'Copied!' : 'Copy'}
-            </button>
-          </div>
-          <button type="button" onClick={inviteFriends} className="gradient-btn mb-4 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 font-bold text-white">
-            <Share2 size={16} /> Invite Friends
-          </button>
-          <div className="mb-3 grid grid-cols-3 gap-2">
-            <div className="text-center">
-              <p className="text-lg font-bold text-cs-purple">{profile?.total_referrals || 0}</p>
-              <p className="text-[9px] text-gray-500">Total Referrals</p>
-            </div>
-            <div className="text-center">
-              <p className="text-lg font-bold text-cs-green">{profile?.active_referrals || 0}</p>
-              <p className="text-[9px] text-gray-500">Active Referrals</p>
-            </div>
-            <div className="text-center">
-              <p className="text-lg font-bold text-cs-gold">${parseFloat(profile?.total_referral_bonus || 0).toFixed(2)}</p>
-              <p className="text-[9px] text-gray-500">Referral Bonus</p>
-            </div>
-          </div>
-          {data?.referral_levels?.map((level) => (
-            <div key={level.level} className="flex items-center justify-between border-t border-cs-border py-2">
-              <span className="text-xs text-gray-400">Level {level.level} Team</span>
-              <span className="text-xs">{level.members} members</span>
-              <span className="text-xs font-semibold text-cs-green">${level.earnings.toFixed(2)}</span>
-            </div>
-          ))}
         </motion.div>
 
+        {/* BTC/USDT Live Trade */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -299,6 +378,7 @@ export default function Dashboard() {
               </span>
             </div>
           </div>
+
           <div className="mb-1 flex items-baseline gap-2">
             {marketLoading ? (
               <span className="text-sm text-gray-500">Loading market...</span>
@@ -315,8 +395,9 @@ export default function Dashboard() {
               <span className="text-sm text-gray-500">{marketError || 'No market data'}</span>
             )}
           </div>
+
           {market && (
-            <div className="mb-3 flex flex-wrap gap-4 text-[10px] text-gray-500">
+            <div className="mb-3 flex flex-wrap gap-3 text-[10px] text-gray-500">
               <span>24H High: <span className="text-white">{market.high_24h?.toLocaleString()}</span></span>
               <span>24H Low: <span className="text-white">{market.low_24h?.toLocaleString()}</span></span>
               <span>Vol: <span className="text-white">{formatVolume(market.volume_24h)}</span></span>
@@ -332,52 +413,66 @@ export default function Dashboard() {
                 type="button"
                 onClick={() => setTimeframe(tf)}
                 className={`rounded-lg px-2.5 py-1 text-[10px] font-medium transition-colors ${
-                  timeframe === tf ? 'bg-cs-purple text-white' : 'bg-cs-dark text-gray-500'
+                  timeframe === tf
+                    ? 'bg-cs-purple text-white shadow-[0_0_10px_rgba(139,92,246,0.5)]'
+                    : 'bg-cs-dark text-gray-500 hover:text-gray-300'
                 }`}
               >
                 {tf}
               </button>
             ))}
           </div>
-          <button
-            type="button"
-            onClick={() => loadMarket(timeframe)}
-            className="gradient-btn mb-3 w-full rounded-xl py-2 text-sm font-bold text-white"
-          >
-            Refresh Chart
-          </button>
 
-          <div className="space-y-1">
-            <p className="mb-1 text-[10px] text-gray-500">Live Trades</p>
-            {market?.live_trades?.length > 0 ? market.live_trades.map((trade, i) => (
-              <div key={i} className="flex justify-between border-b border-cs-border/50 py-1 text-[10px]">
-                <span className={trade.type === 'BUY' ? 'text-cs-green' : 'text-cs-red'}>{trade.type}</span>
-                <span>{Number(trade.price).toLocaleString()}</span>
-                <span className="text-gray-500">{trade.amount} BTC</span>
-                <span className="text-gray-600">{formatTradeTime(trade.time)}</span>
-              </div>
-            )) : (
-              <p className="py-2 text-center text-[10px] text-gray-500">No live trades available</p>
-            )}
+          <div className="flex gap-3">
+            {/* Live Trades */}
+            <div className="min-w-0 flex-1 space-y-0.5">
+              <p className="mb-1 text-[9px] font-medium text-gray-500">Live Trades</p>
+              {market?.live_trades?.length > 0 ? market.live_trades.slice(0, 5).map((trade, i) => (
+                <div key={i} className="flex justify-between gap-1 border-b border-cs-border/30 py-1 text-[9px]">
+                  <span className={`font-semibold ${trade.type === 'BUY' ? 'text-cs-green' : 'text-cs-red'}`}>
+                    {trade.type}
+                  </span>
+                  <span className="text-gray-300">{Number(trade.price).toLocaleString()}</span>
+                  <span className="text-gray-500">{trade.amount}</span>
+                  <span className="text-gray-600">{formatTradeTime(trade.time)}</span>
+                </div>
+              )) : (
+                <p className="py-2 text-center text-[9px] text-gray-500">No live trades</p>
+              )}
+            </div>
+
+            {/* Full Chart button */}
+            <div className="flex w-[38%] shrink-0 flex-col justify-end">
+              <button
+                type="button"
+                onClick={() => loadMarket(timeframe)}
+                className="gradient-btn-cta flex h-full min-h-[80px] flex-col items-center justify-center gap-1.5 rounded-xl px-3 py-3 text-sm font-bold text-white"
+              >
+                <Maximize2 size={18} />
+                Full Chart
+              </button>
+            </div>
           </div>
         </motion.div>
 
+        {/* Footer features */}
         <div className="mb-4 grid grid-cols-4 gap-2">
           {[
-            { icon: Shield, label: 'Secure & Safe', sub: 'Bank-level security', color: 'text-cs-purple' },
-            { icon: TrendingUp, label: 'Daily Profits', sub: 'Earn consistent returns', color: 'text-cs-green' },
-            { icon: Zap, label: 'Instant Withdraw', sub: 'Withdraw anytime', color: 'text-cs-gold' },
-            { icon: Headphones, label: '24/7 Support', sub: 'Always here to help', color: 'text-cs-orange' },
-          ].map(({ icon: Icon, label, sub, color }, i) => (
+            { icon: Shield, label: 'Secure & Safe', sub: 'Bank-level security', color: 'text-cs-purple', variant: 'purple' },
+            { icon: TrendingUp, label: 'Daily Profits', sub: 'Earn consistent returns', color: 'text-cs-green', variant: 'green' },
+            { icon: Zap, label: 'Instant Withdraw', sub: 'Withdraw anytime', color: 'text-cs-gold', variant: 'gold' },
+            { icon: Headphones, label: '24/7 Support', sub: 'Always here to help', color: 'text-blue-400', variant: 'blue' },
+          ].map(({ icon: Icon, label, sub, color, variant }, i) => (
             <motion.div
               key={label}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 + i * 0.08 }}
-              whileHover={{ y: -2 }}
-              className="rounded-xl border border-cs-border/50 bg-cs-card/50 p-2 text-center backdrop-blur-sm"
+              className="rounded-xl border border-cs-border/40 bg-cs-card/40 p-2 text-center"
             >
-              <Icon size={18} className={`mx-auto mb-1 ${color} drop-shadow-[0_0_6px_currentColor]`} />
+              <IconBox variant={variant} size="sm" className="mx-auto mb-1.5">
+                <Icon size={14} className={color} />
+              </IconBox>
               <p className="text-[8px] font-semibold">{label}</p>
               <p className="text-[7px] text-gray-600">{sub}</p>
             </motion.div>

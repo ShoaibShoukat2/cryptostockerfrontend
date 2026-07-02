@@ -46,7 +46,7 @@ export default function Header({ user, notifications = 0 }) {
   );
 }
 
-export function CountdownTimer({ seconds }) {
+export function CountdownTimer({ seconds, showLabels = false }) {
   const [time, setTime] = useState(seconds);
 
   useEffect(() => {
@@ -63,13 +63,34 @@ export function CountdownTimer({ seconds }) {
   const m = String(Math.floor((time % 3600) / 60)).padStart(2, '0');
   const s = String(time % 60).padStart(2, '0');
 
+  if (showLabels) {
+    const parts = [
+      { val: h, label: 'Hrs' },
+      { val: m, label: 'Mins' },
+      { val: s, label: 'Secs' },
+    ];
+    return (
+      <div className="flex items-center justify-center gap-0.5 font-mono">
+        {parts.map((part, i) => (
+          <span key={part.label} className="flex items-center gap-0.5">
+            {i > 0 && <span className="mb-3 text-sm text-gray-600">:</span>}
+            <span className="flex flex-col items-center">
+              <span className="text-lg font-bold leading-none text-white sm:text-xl">{part.val}</span>
+              <span className="mt-0.5 text-[7px] text-gray-500">{part.label}</span>
+            </span>
+          </span>
+        ))}
+      </div>
+    );
+  }
+
   const Digit = ({ value }) => (
     <motion.span
       key={value}
       initial={{ y: -4, opacity: 0.5 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.2 }}
-      className="countdown-digit text-lg font-bold text-cs-gold"
+      className="countdown-digit text-lg font-bold text-white"
     >
       {value}
     </motion.span>
@@ -78,9 +99,9 @@ export function CountdownTimer({ seconds }) {
   return (
     <div className="flex items-center gap-0.5 font-mono">
       <Digit value={h} />
-      <span className="text-cs-gold/60">:</span>
+      <span className="text-gray-500">:</span>
       <Digit value={m} />
-      <span className="text-cs-gold/60">:</span>
+      <span className="text-gray-500">:</span>
       <Digit value={s} />
     </div>
   );

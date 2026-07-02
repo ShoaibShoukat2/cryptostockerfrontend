@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
+import { Briefcase, ArrowDownToLine, ArrowUpFromLine, Coins } from 'lucide-react';
+import { IconBox } from './DashboardIcons';
 
 const colorMap = {
-  purple: { stroke: '#8B5CF6', fill: 'rgba(139,92,246,0.15)' },
-  green: { stroke: '#22C55E', fill: 'rgba(34,197,94,0.15)' },
-  orange: { stroke: '#F97316', fill: 'rgba(249,115,22,0.15)' },
-  red: { stroke: '#EF4444', fill: 'rgba(239,68,68,0.15)' },
-  gold: { stroke: '#F59E0B', fill: 'rgba(245,158,11,0.15)' },
+  purple: { stroke: '#8B5CF6', fill: 'rgba(139,92,246,0.15)', variant: 'purple' },
+  green: { stroke: '#22C55E', fill: 'rgba(34,197,94,0.15)', variant: 'green' },
+  orange: { stroke: '#F97316', fill: 'rgba(249,115,22,0.15)', variant: 'orange' },
+  red: { stroke: '#EF4444', fill: 'rgba(239,68,68,0.15)', variant: 'red' },
+  gold: { stroke: '#F59E0B', fill: 'rgba(245,158,11,0.15)', variant: 'gold' },
 };
 
 const glowMap = {
@@ -17,10 +19,20 @@ const glowMap = {
   gold: 'glow-gold',
 };
 
+const iconMap = {
+  purple: Briefcase,
+  green: ArrowDownToLine,
+  orange: ArrowUpFromLine,
+  red: Coins,
+};
+
 const EMPTY_TREND = Array.from({ length: 12 }, () => ({ v: 0 }));
 
-export default function StatCard({ title, value, color = 'purple', prefix = '$', trend = [], index = 0 }) {
+export default function StatCard({
+  title, value, color = 'purple', prefix = '$', trend = [], index = 0, subValue,
+}) {
   const colors = colorMap[color];
+  const Icon = iconMap[color] || Briefcase;
   const chartData = trend.length > 0
     ? trend.map((v) => ({ v: Number(v) || 0 }))
     : EMPTY_TREND;
@@ -33,22 +45,26 @@ export default function StatCard({ title, value, color = 'purple', prefix = '$',
       whileHover={{ y: -3, transition: { duration: 0.2 } }}
       className={`card-dark p-3 ${glowMap[color]}`}
     >
-      <p className="mb-1 text-[10px] font-medium uppercase tracking-wide text-gray-400">{title}</p>
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: index * 0.08 + 0.2 }}
-        className="text-lg font-bold"
-        style={{ color: colors.stroke, textShadow: `0 0 20px ${colors.stroke}40` }}
-      >
-        {prefix}{typeof value === 'number' ? value.toLocaleString('en-US', { minimumFractionDigits: 2 }) : value}
-      </motion.p>
-      <div className="chart-draw mt-1 h-8">
+      <div className="mb-2 flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-[9px] font-medium uppercase tracking-wide text-gray-400">{title}</p>
+          <p className="text-base font-bold leading-tight" style={{ color: colors.stroke }}>
+            {prefix}{typeof value === 'number' ? value.toLocaleString('en-US', { minimumFractionDigits: 2 }) : value}
+          </p>
+          {subValue && (
+            <p className="mt-0.5 text-[9px] text-gray-500">{subValue}</p>
+          )}
+        </div>
+        <IconBox variant={colors.variant} size="sm">
+          <Icon size={16} style={{ color: colors.stroke }} />
+        </IconBox>
+      </div>
+      <div className="chart-draw h-10">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData}>
             <defs>
-              <linearGradient id={`grad-${color}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={colors.stroke} stopOpacity={0.3} />
+              <linearGradient id={`grad-${color}-${index}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={colors.stroke} stopOpacity={0.35} />
                 <stop offset="100%" stopColor={colors.stroke} stopOpacity={0} />
               </linearGradient>
             </defs>
@@ -56,7 +72,7 @@ export default function StatCard({ title, value, color = 'purple', prefix = '$',
               type="monotone"
               dataKey="v"
               stroke={colors.stroke}
-              fill={`url(#grad-${color})`}
+              fill={`url(#grad-${color}-${index})`}
               strokeWidth={2}
               animationDuration={1500}
               animationBegin={index * 100}
