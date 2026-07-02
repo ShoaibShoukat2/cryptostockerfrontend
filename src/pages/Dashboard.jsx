@@ -2,8 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Wallet, Copy, Gift, Shield, TrendingUp, Zap, Headphones,
-  Share2, ChevronRight, Maximize2, Info, Users,
+  Wallet, Copy, ChevronRight, Maximize2, Info, Share2,
 } from 'lucide-react';
 import { userAPI } from '../api';
 import { getBtcMarket } from '../services/marketService';
@@ -14,7 +13,8 @@ import StatCard from '../components/StatCard';
 import CandlestickChart from '../components/CandlestickChart';
 import AnimatedValue from '../components/AnimatedValue';
 import {
-  IconBox, DepositIcon, WithdrawIcon, PendingDepositIcon, PendingWithdrawIcon,
+  DepositNeonIcon, WithdrawNeonIcon, PendingDepositNeonIcon, PendingWithdrawNeonIcon,
+  GiftNeonIcon, ReferralNeonIcon, SecureNeonIcon, ProfitsNeonIcon, InstantNeonIcon, SupportNeonIcon,
 } from '../components/DashboardIcons';
 import logoImg from '../assets/logo.jpeg';
 
@@ -218,9 +218,7 @@ export default function Dashboard() {
             whileTap={{ scale: 0.98 }}
             className="action-card card-dark glow-purple flex items-center gap-3 p-3 text-left"
           >
-            <IconBox variant="purple" size="lg">
-              <DepositIcon />
-            </IconBox>
+            <DepositNeonIcon size="lg" />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-bold">Deposit</p>
               <p className="text-[9px] text-gray-500">Add funds to your account</p>
@@ -234,9 +232,7 @@ export default function Dashboard() {
             whileTap={{ scale: 0.98 }}
             className="action-card card-dark glow-orange flex items-center gap-3 p-3 text-left"
           >
-            <IconBox variant="orange" size="lg">
-              <WithdrawIcon />
-            </IconBox>
+            <WithdrawNeonIcon size="lg" />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-bold">Withdraw</p>
               <p className="text-[9px] text-gray-500">Withdraw your earnings</p>
@@ -248,9 +244,7 @@ export default function Dashboard() {
         {/* Pending */}
         <div className="mb-4 grid grid-cols-2 gap-3">
           <div className="pending-card card-dark glow-red flex items-center gap-2.5 p-3">
-            <IconBox variant="red" size="sm">
-              <PendingDepositIcon />
-            </IconBox>
+            <PendingDepositNeonIcon size="sm" />
             <div className="min-w-0">
               <p className="text-[9px] text-gray-400">Pending Deposits</p>
               <p className="text-sm font-bold text-cs-red">
@@ -263,9 +257,7 @@ export default function Dashboard() {
           </div>
 
           <div className="pending-card card-dark glow-gold flex items-center gap-2.5 p-3">
-            <IconBox variant="gold" size="sm">
-              <PendingWithdrawIcon />
-            </IconBox>
+            <PendingWithdrawNeonIcon size="sm" />
             <div className="min-w-0">
               <p className="text-[9px] text-gray-400">Pending Withdrawals</p>
               <p className="text-sm font-bold text-cs-gold">
@@ -304,7 +296,7 @@ export default function Dashboard() {
             {/* Left */}
             <div className="min-w-0 flex-1">
               <div className="refer-gift-area mb-3 flex h-20 items-center justify-center rounded-xl">
-                <Gift size={40} className="text-cs-purple drop-shadow-[0_0_12px_rgba(139,92,246,0.6)]" />
+                <GiftNeonIcon size="md" />
               </div>
               <p className="mb-2 text-[10px] text-gray-400">Your Referral Code</p>
               <div className="mb-3 flex gap-2">
@@ -350,9 +342,7 @@ export default function Dashboard() {
                 return (
                   <div key={level.level} className="flex items-center justify-between border-t border-cs-border/50 py-1.5">
                     <div className="flex items-center gap-1.5">
-                      <IconBox variant={variant} size="sm">
-                        <Users size={12} className={variant === 'purple' ? 'text-cs-purple' : variant === 'blue' ? 'text-blue-400' : 'text-cs-green'} />
-                      </IconBox>
+                      <ReferralNeonIcon variant={variant} size="sm" />
                       <span className="text-[9px] text-gray-400">Level {level.level}</span>
                     </div>
                     <span className="text-[9px] font-semibold text-cs-green">${level.earnings.toFixed(2)}</span>
@@ -458,21 +448,19 @@ export default function Dashboard() {
         {/* Footer features */}
         <div className="mb-4 grid grid-cols-4 gap-2">
           {[
-            { icon: Shield, label: 'Secure & Safe', sub: 'Bank-level security', color: 'text-cs-purple', variant: 'purple' },
-            { icon: TrendingUp, label: 'Daily Profits', sub: 'Earn consistent returns', color: 'text-cs-green', variant: 'green' },
-            { icon: Zap, label: 'Instant Withdraw', sub: 'Withdraw anytime', color: 'text-cs-gold', variant: 'gold' },
-            { icon: Headphones, label: '24/7 Support', sub: 'Always here to help', color: 'text-blue-400', variant: 'blue' },
-          ].map(({ icon: Icon, label, sub, color, variant }, i) => (
+            { Icon: SecureNeonIcon, label: 'Secure & Safe', sub: 'Bank-level security' },
+            { Icon: ProfitsNeonIcon, label: 'Daily Profits', sub: 'Earn consistent returns' },
+            { Icon: InstantNeonIcon, label: 'Instant Withdraw', sub: 'Withdraw anytime' },
+            { Icon: SupportNeonIcon, label: '24/7 Support', sub: 'Always here to help' },
+          ].map(({ Icon, label, sub }, i) => (
             <motion.div
               key={label}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 + i * 0.08 }}
-              className="rounded-xl border border-cs-border/40 bg-cs-card/40 p-2 text-center"
+              className="flex flex-col items-center rounded-xl border border-cs-border/40 bg-cs-card/40 p-2 text-center"
             >
-              <IconBox variant={variant} size="sm" className="mx-auto mb-1.5">
-                <Icon size={14} className={color} />
-              </IconBox>
+              <Icon size="sm" className="mb-1.5" />
               <p className="text-[8px] font-semibold">{label}</p>
               <p className="text-[7px] text-gray-600">{sub}</p>
             </motion.div>

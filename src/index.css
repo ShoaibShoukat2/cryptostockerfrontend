@@ -205,7 +205,26 @@ body {
   100% { background-position: -200% 0; }
 }
 
-/* Stack balance card */
+/* Neon glass icon effects */
+.neon-glass-icon {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.neon-glass-icon:hover {
+  transform: translateY(-1px) scale(1.04);
+}
+
+.neon-svg-glow {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 6px currentColor);
+}
+
+.neon-icon-float {
+  animation: neon-float 3.5s ease-in-out infinite;
+}
+@keyframes neon-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
 .stack-balance-card {
   border: 1px solid rgba(139, 92, 246, 0.25);
   box-shadow: 0 0 30px rgba(139, 92, 246, 0.15), inset 0 1px 0 rgba(139, 92, 246, 0.08);

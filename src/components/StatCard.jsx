@@ -1,14 +1,13 @@
 import { motion } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
-import { Briefcase, ArrowDownToLine, ArrowUpFromLine, Coins } from 'lucide-react';
-import { IconBox } from './DashboardIcons';
+import { STAT_NEON_ICONS } from './DashboardIcons';
 
 const colorMap = {
-  purple: { stroke: '#8B5CF6', fill: 'rgba(139,92,246,0.15)', variant: 'purple' },
-  green: { stroke: '#22C55E', fill: 'rgba(34,197,94,0.15)', variant: 'green' },
-  orange: { stroke: '#F97316', fill: 'rgba(249,115,22,0.15)', variant: 'orange' },
-  red: { stroke: '#EF4444', fill: 'rgba(239,68,68,0.15)', variant: 'red' },
-  gold: { stroke: '#F59E0B', fill: 'rgba(245,158,11,0.15)', variant: 'gold' },
+  purple: { stroke: '#8B5CF6', fill: 'rgba(139,92,246,0.15)' },
+  green: { stroke: '#22C55E', fill: 'rgba(34,197,94,0.15)' },
+  orange: { stroke: '#F97316', fill: 'rgba(249,115,22,0.15)' },
+  red: { stroke: '#EF4444', fill: 'rgba(239,68,68,0.15)' },
+  gold: { stroke: '#F59E0B', fill: 'rgba(245,158,11,0.15)' },
 };
 
 const glowMap = {
@@ -19,20 +18,13 @@ const glowMap = {
   gold: 'glow-gold',
 };
 
-const iconMap = {
-  purple: Briefcase,
-  green: ArrowDownToLine,
-  orange: ArrowUpFromLine,
-  red: Coins,
-};
-
 const EMPTY_TREND = Array.from({ length: 12 }, () => ({ v: 0 }));
 
 export default function StatCard({
   title, value, color = 'purple', prefix = '$', trend = [], index = 0, subValue,
 }) {
   const colors = colorMap[color];
-  const Icon = iconMap[color] || Briefcase;
+  const NeonIcon = STAT_NEON_ICONS[color] || STAT_NEON_ICONS.purple;
   const chartData = trend.length > 0
     ? trend.map((v) => ({ v: Number(v) || 0 }))
     : EMPTY_TREND;
@@ -55,9 +47,7 @@ export default function StatCard({
             <p className="mt-0.5 text-[9px] text-gray-500">{subValue}</p>
           )}
         </div>
-        <IconBox variant={colors.variant} size="sm">
-          <Icon size={16} style={{ color: colors.stroke }} />
-        </IconBox>
+        <NeonIcon size="sm" />
       </div>
       <div className="chart-draw h-10">
         <ResponsiveContainer width="100%" height="100%">
