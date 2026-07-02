@@ -3,26 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Crown, Sparkles } from 'lucide-react';
 import NotificationBell from './NotificationBell';
-
-function HeaderIconBtn({ children, onClick, label, variant = 'purple' }) {
-  const glow = {
-    purple: 'border-purple-500/25 bg-purple-500/10 shadow-[0_0_14px_rgba(168,85,247,0.2)] hover:border-purple-400/40 hover:shadow-[0_0_18px_rgba(168,85,247,0.35)]',
-    gold: 'border-amber-500/25 bg-amber-500/10 shadow-[0_0_14px_rgba(245,158,11,0.15)] hover:border-amber-400/40',
-  }[variant];
-
-  return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      whileHover={{ scale: 1.06, y: -1 }}
-      whileTap={{ scale: 0.95 }}
-      aria-label={label}
-      className={`relative flex h-10 w-10 items-center justify-center rounded-xl border backdrop-blur-md transition-all ${glow}`}
-    >
-      {children}
-    </motion.button>
-  );
-}
+import navbarLogo from '../assets/navbarlogo.png';
 
 export default function Header({ user, notifications = 0 }) {
   const navigate = useNavigate();
@@ -35,60 +16,50 @@ export default function Header({ user, notifications = 0 }) {
       initial={{ opacity: 0, y: -12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="mb-4 relative z-[60]"
+      className="relative z-[60] mb-4"
     >
-      <div className="header-glass-bar flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-gradient-to-r from-[#141414]/90 via-[#111111]/95 to-[#141414]/90 px-3 py-2.5 backdrop-blur-xl sm:px-4 sm:py-3">
-        {/* Left — greeting */}
-        <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3">
+      <div className="header-glass-bar flex items-center justify-between gap-2 rounded-2xl bg-gradient-to-r from-[#141414]/90 via-[#111111]/95 to-[#141414]/90 px-2 py-2 backdrop-blur-xl sm:gap-3 sm:px-3 sm:py-2.5">
+        {/* Left — navbar logo + greeting */}
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           <motion.button
             type="button"
-            onClick={() => navigate('/profile')}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="relative shrink-0"
-            aria-label="Open profile"
+            onClick={() => navigate('/dashboard')}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="shrink-0"
+            aria-label="Go to dashboard"
           >
-            <div
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-violet-900 ring-2 ring-purple-500/30 sm:h-11 sm:w-11"
-              style={{ boxShadow: '0 0 20px rgba(139,92,246,0.4)' }}
-            >
-              <span className="text-sm font-bold text-white sm:text-base">
-                {name.charAt(0).toUpperCase()}
-              </span>
-            </div>
-            <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-500 ring-2 ring-[#111]">
-              <Crown size={9} className="text-white" />
-            </span>
+            <img
+              src={navbarLogo}
+              alt="Crypto Stacker"
+              className="h-9 w-auto max-w-[110px] object-contain object-left sm:h-10 sm:max-w-[130px]"
+              draggable={false}
+            />
           </motion.button>
 
-          <div className="min-w-0">
+          <div className="hidden min-w-0 sm:block">
             <div className="flex flex-wrap items-center gap-1.5">
-              <p className="truncate text-sm font-bold text-white sm:text-base">
+              <p className="truncate text-sm font-bold text-white">
                 Hi, {name}
               </p>
               <motion.span
                 animate={{ rotate: [0, 14, -8, 0] }}
                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
               >
-                <Sparkles size={13} className="text-amber-400" />
+                <Sparkles size={12} className="text-amber-400" />
               </motion.span>
-              <span className="hidden rounded-full bg-gradient-to-r from-purple-600/30 to-amber-500/30 px-2 py-0.5 text-[8px] font-bold text-amber-300 ring-1 ring-amber-500/30 sm:inline">
+              <span className="rounded-full bg-gradient-to-r from-purple-600/30 to-amber-500/30 px-2 py-0.5 text-[8px] font-bold text-amber-300">
                 VIP {vipLevel}
               </span>
             </div>
-            <p className="text-[10px] text-gray-500 sm:text-[11px]">Welcome back · Ready to stack</p>
-            {balance > 0 && (
-              <p className="mt-0.5 text-[10px] font-semibold text-purple-400 sm:hidden">
-                ${balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-              </p>
-            )}
+            <p className="text-[10px] text-gray-500">Welcome back · Ready to stack</p>
           </div>
         </div>
 
         {/* Right — actions */}
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           {balance > 0 && (
-            <div className="hidden rounded-xl border border-purple-500/20 bg-purple-500/10 px-2.5 py-1.5 text-right sm:block">
+            <div className="hidden rounded-xl bg-purple-500/10 px-2 py-1 text-right md:block">
               <p className="text-[8px] text-gray-500">Balance</p>
               <p className="text-xs font-bold text-white">
                 ${balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
@@ -98,12 +69,26 @@ export default function Header({ user, notifications = 0 }) {
 
           <NotificationBell initialCount={notifications} variant="glass" />
 
-          <HeaderIconBtn label="Profile" onClick={() => navigate('/profile')}>
-            <svg viewBox="0 0 20 20" className="h-4.5 w-4.5" fill="none">
-              <circle cx="10" cy="7" r="3.5" stroke="#C084FC" strokeWidth="1.5" />
-              <path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#A855F7" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </HeaderIconBtn>
+          <motion.button
+            type="button"
+            onClick={() => navigate('/profile')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="relative shrink-0"
+            aria-label="Open profile"
+          >
+            <div
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-violet-900 sm:h-10 sm:w-10"
+              style={{ boxShadow: '0 0 16px rgba(139,92,246,0.35)' }}
+            >
+              <span className="text-xs font-bold text-white sm:text-sm">
+                {name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <span className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-500 ring-2 ring-[#111]">
+              <Crown size={8} className="text-white" />
+            </span>
+          </motion.button>
         </div>
       </div>
     </motion.header>
