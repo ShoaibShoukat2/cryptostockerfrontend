@@ -18,21 +18,21 @@ export default function Header({ user, notifications = 0 }) {
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       className="relative z-[60] mb-4"
     >
-      <div className="header-glass-bar flex items-center justify-between gap-2 rounded-2xl bg-gradient-to-r from-[#141414]/90 via-[#111111]/95 to-[#141414]/90 px-2 py-2 backdrop-blur-xl sm:gap-3 sm:px-3 sm:py-2.5">
+      <div className="flex items-center justify-between gap-2 px-0 py-1 sm:gap-3 sm:py-1.5">
         {/* Left — navbar logo + greeting */}
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           <motion.button
             type="button"
             onClick={() => navigate('/dashboard')}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             className="shrink-0"
             aria-label="Go to dashboard"
           >
             <img
               src={navbarLogo}
               alt="Crypto Stacker"
-              className="h-9 w-auto max-w-[110px] object-contain object-left sm:h-10 sm:max-w-[130px]"
+              className="h-12 w-auto max-w-[150px] object-contain object-left sm:h-14 sm:max-w-[180px] md:max-w-[200px]"
               draggable={false}
             />
           </motion.button>
@@ -59,7 +59,7 @@ export default function Header({ user, notifications = 0 }) {
         {/* Right — actions */}
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           {balance > 0 && (
-            <div className="hidden rounded-xl bg-purple-500/10 px-2 py-1 text-right md:block">
+            <div className="hidden px-1 text-right md:block">
               <p className="text-[8px] text-gray-500">Balance</p>
               <p className="text-xs font-bold text-white">
                 ${balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}

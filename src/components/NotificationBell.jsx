@@ -91,7 +91,7 @@ export default function NotificationBell({ initialCount = 0, variant = 'default'
   };
 
   const btnClass = variant === 'glass'
-    ? `relative flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 backdrop-blur-md transition-all hover:bg-purple-500/15 hover:shadow-[0_0_18px_rgba(168,85,247,0.35)] ${open ? 'bg-purple-500/15 shadow-[0_0_18px_rgba(168,85,247,0.4)]' : ''}`
+    ? `relative flex h-10 w-10 items-center justify-center rounded-xl text-purple-300 transition-colors hover:text-purple-200 ${open ? 'text-purple-200' : ''}`
     : 'relative text-gray-400 transition-colors hover:text-white';
 
   const BellIcon = unreadCount > 0 ? BellRing : Bell;
