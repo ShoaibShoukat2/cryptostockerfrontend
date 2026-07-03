@@ -187,6 +187,23 @@ export default function Dashboard() {
               <p className="mb-2 text-[9px] leading-snug text-gray-400 sm:text-[10px]">
                 Stack your balance and earn daily profits.
               </p>
+              <div className="mb-2 grid grid-cols-2 gap-1.5">
+                <div className="rounded-lg border border-cs-purple/25 bg-cs-purple/10 px-2 py-1.5">
+                  <p className="text-[8px] text-gray-400">Total Balance</p>
+                  <AnimatedValue
+                    value={parseFloat(profile?.total_balance || 0)}
+                    className="text-sm font-bold text-white sm:text-base"
+                  />
+                </div>
+                <div className="rounded-lg border border-cs-green/25 bg-cs-green/10 px-2 py-1.5">
+                  <p className="text-[8px] text-gray-400">Today Profit</p>
+                  <AnimatedValue
+                    value={parseFloat(data?.today_profit || 0)}
+                    className="text-sm font-bold text-cs-green sm:text-base"
+                    prefix="+$"
+                  />
+                </div>
+              </div>
               <p className="text-[9px] italic text-gray-500">Available Balance</p>
               <AnimatedValue
                 value={parseFloat(profile?.available_balance || 0)}
