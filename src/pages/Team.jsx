@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Copy, Share2, CheckCircle, Lock } from 'lucide-react';
+import { Copy, Share2, CheckCircle, Lock, BadgePercent } from 'lucide-react';
 import { userAPI } from '../api';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
@@ -92,6 +92,29 @@ export default function Team() {
             <div className="rounded-xl border border-cs-border bg-cs-dark p-3 text-center">
               <p className="text-xl font-bold text-cs-gold">${parseFloat(user?.total_referral_bonus || 0).toFixed(0)}</p>
               <p className="text-[10px] text-gray-500">Commission</p>
+            </div>
+          </div>
+
+          <div className="mb-4 overflow-hidden rounded-xl border border-cs-gold/40 bg-gradient-to-r from-cs-gold/15 via-cs-orange/10 to-cs-purple/10 p-4 shadow-[0_0_18px_rgba(245,158,11,0.22)]">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cs-gold/20">
+                <BadgePercent size={20} className="text-cs-gold" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold leading-snug text-cs-gold">
+                  12% Commission on Every Deposit
+                </p>
+                <p className="mt-1 text-[11px] leading-relaxed text-gray-400">
+                  Earn instantly when your direct referral makes a deposit.
+                </p>
+                <p className="mt-1.5 text-[10px] text-gray-500">
+                  Example:{' '}
+                  <span className="font-semibold text-white">$100 deposit</span>
+                  {' = '}
+                  <span className="font-bold text-cs-gold">$12 commission</span>
+                  {' for you'}
+                </p>
+              </div>
             </div>
           </div>
 

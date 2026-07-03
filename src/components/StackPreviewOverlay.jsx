@@ -1,27 +1,45 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-function playTone(freq, duration = 0.12, volume = 0.15) {
+let audioCtx = null;
+
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playTone(freq, duration = 0.18, volume = 0.55) {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = getAudioContext();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+    osc.type = 'sine';
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.frequency.value = freq;
-    gain.gain.value = volume;
-    osc.start();
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-    osc.stop(ctx.currentTime + duration);
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+    const now = ctx.currentTime;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(volume, now + 0.02);
+    gain.gain.setValueAtTime(volume, now + duration * 0.55);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+    osc.start(now);
+    osc.stop(now + duration + 0.02);
   } catch {
     /* audio not available */
   }
 }
 
 function playSuccessSound() {
-  playTone(523, 0.15, 0.2);
-  setTimeout(() => playTone(659, 0.15, 0.2), 120);
-  setTimeout(() => playTone(784, 0.25, 0.25), 240);
+  playTone(523, 0.22, 0.6);
+  setTimeout(() => playTone(659, 0.22, 0.65), 140);
+  setTimeout(() => playTone(784, 0.35, 0.7), 280);
 }
 
 export default function StackPreviewOverlay({ active, onComplete, balance, profitPercent }) {
@@ -40,7 +58,13 @@ export default function StackPreviewOverlay({ active, onComplete, balance, profi
     }
 
     setCount(10);
-    playTone(440, 0.08, 0.12);
+    // Unlock audio on user gesture path (Stack Now click)
+    try {
+      getAudioContext();
+    } catch {
+      /* ignore */
+    }
+    playTone(440, 0.16, 0.55);
 
     intervalRef.current = setInterval(() => {
       setCount((prev) => {
@@ -50,7 +74,7 @@ export default function StackPreviewOverlay({ active, onComplete, balance, profi
           setTimeout(onComplete, 400);
           return 0;
         }
-        playTone(300 + (10 - prev) * 40, 0.1, 0.15);
+        playTone(300 + (10 - prev) * 40, 0.18, 0.6);
         return prev - 1;
       });
     }, 1000);
