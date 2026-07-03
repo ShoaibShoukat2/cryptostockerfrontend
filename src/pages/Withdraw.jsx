@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { ArrowUpFromLine, Clock } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { userAPI } from '../api';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import { useAuth } from '../context/AuthContext';
+import { WithdrawNeonIcon } from '../components/DashboardIcons';
 
 const statusStyle = {
   pending: 'text-yellow-400 bg-yellow-400/10',
@@ -67,9 +68,7 @@ export default function Withdraw() {
 
         <div className="card-dark glow-orange mb-4 p-6">
           <div className="mb-4 flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cs-orange/20">
-              <ArrowUpFromLine size={24} className="text-cs-orange" />
-            </div>
+            <WithdrawNeonIcon size="md" />
             <div>
               <h2 className="text-xl font-bold">Withdraw Funds</h2>
               <p className="text-sm text-gray-500">Withdraw your earnings</p>

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { ArrowDownToLine, Clock } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { userAPI } from '../api';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import { useAuth } from '../context/AuthContext';
+import { DepositNeonIcon } from '../components/DashboardIcons';
 
 const statusStyle = {
   pending: 'text-yellow-400 bg-yellow-400/10',
@@ -64,9 +65,7 @@ export default function Deposit() {
 
         <div className="card-dark glow-purple mb-4 p-6">
           <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cs-purple/20">
-              <ArrowDownToLine size={24} className="text-cs-purple" />
-            </div>
+            <DepositNeonIcon size="md" />
             <div>
               <h2 className="text-xl font-bold">Deposit Funds</h2>
               <p className="text-sm text-gray-500">Add funds to your account</p>

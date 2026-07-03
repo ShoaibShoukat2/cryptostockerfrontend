@@ -296,7 +296,7 @@ export default function Dashboard() {
             {/* Left */}
             <div className="min-w-0 flex-1">
               <div className="refer-gift-area mb-3 flex h-20 items-center justify-center rounded-xl">
-                <GiftNeonIcon size="md" />
+                <GiftNeonIcon size="lg" />
               </div>
               <p className="mb-2 text-[10px] text-gray-400">Your Referral Code</p>
               <div className="mb-3 flex gap-2">

@@ -1,3 +1,7 @@
+import depositIcon from '../assets/depositIcon.png';
+import withdrawalIcon from '../assets/withdrawalIcon.png';
+import referralIcon from '../assets/referralIcon.png';
+
 const VARIANTS = {
   purple: {
     glass: 'from-purple-500/20 via-violet-600/10 to-purple-900/20',
@@ -55,6 +59,24 @@ const SIZES = {
   lg: { box: 'h-14 w-14 rounded-2xl', icon: 'h-7 w-7' },
 };
 
+const PNG_SIZES = {
+  sm: 'h-10 w-10',
+  md: 'h-12 w-12',
+  lg: 'h-14 w-14',
+};
+
+function PngIcon({ src, alt, size = 'lg', className = '' }) {
+  const s = PNG_SIZES[size] || PNG_SIZES.lg;
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={`shrink-0 object-contain ${s} ${className}`}
+      draggable={false}
+    />
+  );
+}
+
 export function GlassNeonIcon({
   variant = 'purple',
   size = 'md',
@@ -84,86 +106,19 @@ export function GlassNeonIcon({
 /* ─── Action Icons ─── */
 
 export function DepositNeonIcon({ size = 'lg', className = '' }) {
-  const s = SIZES[size] || SIZES.lg;
-  return (
-    <GlassNeonIcon variant="purple" size={size} className={className} animate>
-      <svg viewBox="0 0 32 32" className={`neon-svg-glow ${s.icon}`} fill="none">
-        <defs>
-          <linearGradient id="dep-body" x1="8" y1="12" x2="24" y2="26" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#C084FC" /><stop offset="1" stopColor="#7C3AED" />
-          </linearGradient>
-          <linearGradient id="dep-arrow" x1="16" y1="4" x2="16" y2="14" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#E9D5FF" /><stop offset="1" stopColor="#A855F7" />
-          </linearGradient>
-        </defs>
-        <rect x="7" y="13" width="18" height="12" rx="3" fill="url(#dep-body)" />
-        <rect x="7" y="13" width="18" height="3" fill="white" fillOpacity="0.15" />
-        <circle cx="21" cy="20" r="2.5" fill="#EDE9FE" fillOpacity="0.9" />
-        <path d="M16 5v7M12.5 8.5L16 5l3.5 3.5" stroke="url(#dep-arrow)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-        <ellipse cx="16" cy="26" rx="8" ry="1.5" fill="#A855F7" fillOpacity="0.25" />
-      </svg>
-    </GlassNeonIcon>
-  );
+  return <PngIcon src={depositIcon} alt="Deposit" size={size} className={className} />;
 }
 
 export function WithdrawNeonIcon({ size = 'lg', className = '' }) {
-  const s = SIZES[size] || SIZES.lg;
-  return (
-    <GlassNeonIcon variant="orange" size={size} className={className} animate>
-      <svg viewBox="0 0 32 32" className={`neon-svg-glow ${s.icon}`} fill="none">
-        <defs>
-          <linearGradient id="wd-body" x1="8" y1="12" x2="24" y2="26" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#FDBA74" /><stop offset="1" stopColor="#EA580C" />
-          </linearGradient>
-          <linearGradient id="wd-arrow" x1="16" y1="18" x2="16" y2="28" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#FEF3C7" /><stop offset="1" stopColor="#F97316" />
-          </linearGradient>
-        </defs>
-        <rect x="7" y="11" width="18" height="12" rx="3" fill="url(#wd-body)" />
-        <rect x="7" y="11" width="18" height="3" fill="white" fillOpacity="0.2" />
-        <circle cx="21" cy="18" r="2.5" fill="#FFEDD5" fillOpacity="0.9" />
-        <path d="M16 27v-7M12.5 20.5L16 24l3.5-3.5" stroke="url(#wd-arrow)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-        <ellipse cx="16" cy="25" rx="8" ry="1.5" fill="#F97316" fillOpacity="0.25" />
-      </svg>
-    </GlassNeonIcon>
-  );
+  return <PngIcon src={withdrawalIcon} alt="Withdraw" size={size} className={className} />;
 }
 
 export function PendingDepositNeonIcon({ size = 'sm', className = '' }) {
-  const s = SIZES[size] || SIZES.sm;
-  return (
-    <GlassNeonIcon variant="red" size={size} className={className}>
-      <svg viewBox="0 0 24 24" className={`neon-svg-glow ${s.icon}`} fill="none">
-        <defs>
-          <linearGradient id="pd-bag" x1="6" y1="4" x2="18" y2="20" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#FCA5A5" /><stop offset="1" stopColor="#DC2626" />
-          </linearGradient>
-        </defs>
-        <path d="M8 9V8a4 4 0 118 0v1" stroke="#FCA5A5" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M6 9h12l-1 11H7L6 9z" fill="url(#pd-bag)" />
-        <path d="M6 9h12" stroke="white" strokeOpacity="0.2" strokeWidth="1" />
-        <circle cx="12" cy="14" r="2" fill="white" fillOpacity="0.5" />
-      </svg>
-    </GlassNeonIcon>
-  );
+  return <PngIcon src={depositIcon} alt="Pending Deposit" size={size} className={className} />;
 }
 
 export function PendingWithdrawNeonIcon({ size = 'sm', className = '' }) {
-  const s = SIZES[size] || SIZES.sm;
-  return (
-    <GlassNeonIcon variant="gold" size={size} className={className}>
-      <svg viewBox="0 0 24 24" className={`neon-svg-glow ${s.icon}`} fill="none">
-        <defs>
-          <linearGradient id="pw-ring" x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#FDE68A" /><stop offset="1" stopColor="#D97706" />
-          </linearGradient>
-        </defs>
-        <circle cx="12" cy="12" r="8.5" stroke="url(#pw-ring)" strokeWidth="2" />
-        <path d="M12 7v5.5l3 2" stroke="#FEF3C7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="12" cy="12" r="1.5" fill="#FBBF24" />
-      </svg>
-    </GlassNeonIcon>
-  );
+  return <PngIcon src={withdrawalIcon} alt="Pending Withdraw" size={size} className={className} />;
 }
 
 /* ─── Stat Icons ─── */
@@ -188,37 +143,11 @@ export function BalanceNeonIcon({ size = 'sm', className = '' }) {
 }
 
 export function DepositStatNeonIcon({ size = 'sm', className = '' }) {
-  const s = SIZES[size] || SIZES.sm;
-  return (
-    <GlassNeonIcon variant="green" size={size} className={className}>
-      <svg viewBox="0 0 24 24" className={`neon-svg-glow ${s.icon}`} fill="none">
-        <defs>
-          <linearGradient id="ds-box" x1="5" y1="10" x2="19" y2="20" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#86EFAC" /><stop offset="1" stopColor="#16A34A" />
-          </linearGradient>
-        </defs>
-        <rect x="5" y="9" width="14" height="10" rx="2" fill="url(#ds-box)" />
-        <path d="M12 4v9M9 7l3-3 3 3" stroke="#BBF7D0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </GlassNeonIcon>
-  );
+  return <PngIcon src={depositIcon} alt="Total Deposit" size={size} className={className} />;
 }
 
 export function WithdrawStatNeonIcon({ size = 'sm', className = '' }) {
-  const s = SIZES[size] || SIZES.sm;
-  return (
-    <GlassNeonIcon variant="orange" size={size} className={className}>
-      <svg viewBox="0 0 24 24" className={`neon-svg-glow ${s.icon}`} fill="none">
-        <defs>
-          <linearGradient id="ws-box" x1="5" y1="8" x2="19" y2="18" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#FDBA74" /><stop offset="1" stopColor="#EA580C" />
-          </linearGradient>
-        </defs>
-        <rect x="5" y="8" width="14" height="10" rx="2" fill="url(#ws-box)" />
-        <path d="M12 20v-9M9 17l3 3 3-3" stroke="#FED7AA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </GlassNeonIcon>
-  );
+  return <PngIcon src={withdrawalIcon} alt="Total Withdraw" size={size} className={className} />;
 }
 
 export function ProfitNeonIcon({ size = 'sm', className = '' }) {
@@ -306,40 +235,12 @@ export function SupportNeonIcon({ size = 'sm', className = '' }) {
   );
 }
 
-export function ReferralNeonIcon({ variant = 'purple', size = 'sm', className = '' }) {
-  const s = SIZES[size] || SIZES.sm;
-  const colors = { purple: '#C084FC', blue: '#93C5FD', green: '#86EFAC' };
-  const c = colors[variant] || colors.purple;
-  return (
-    <GlassNeonIcon variant={variant} size={size} className={className}>
-      <svg viewBox="0 0 24 24" className={`neon-svg-glow ${s.icon}`} fill="none">
-        <circle cx="9" cy="8" r="3.5" fill={c} fillOpacity="0.9" />
-        <circle cx="16" cy="9" r="2.5" fill={c} fillOpacity="0.6" />
-        <path d="M3 19c0-3 2.5-5 6-5s6 2 6 5" stroke={c} strokeWidth="2" strokeLinecap="round" />
-      </svg>
-    </GlassNeonIcon>
-  );
+export function ReferralNeonIcon({ size = 'sm', className = '' }) {
+  return <PngIcon src={referralIcon} alt="Referral" size={size} className={className} />;
 }
 
 export function GiftNeonIcon({ size = 'md', className = '' }) {
-  const s = SIZES[size] || SIZES.md;
-  return (
-    <GlassNeonIcon variant="purple" size={size} className={className} animate>
-      <svg viewBox="0 0 32 32" className={`neon-svg-glow ${s.icon}`} fill="none">
-        <defs>
-          <linearGradient id="gift-box" x1="6" y1="12" x2="26" y2="26" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#C084FC" /><stop offset="1" stopColor="#7C3AED" />
-          </linearGradient>
-          <linearGradient id="gift-ribbon" x1="16" y1="6" x2="16" y2="26" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#FDE68A" /><stop offset="1" stopColor="#F59E0B" />
-          </linearGradient>
-        </defs>
-        <rect x="6" y="14" width="20" height="12" rx="2" fill="url(#gift-box)" />
-        <rect x="14" y="14" width="4" height="12" fill="url(#gift-ribbon)" />
-        <path d="M16 14V8M11 10c0-2 2-3 5-1M16 10c3-2 5-1 5 1" stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-    </GlassNeonIcon>
-  );
+  return <PngIcon src={referralIcon} alt="Refer & Earn" size={size} className={className} />;
 }
 
 /* Stat icon map for StatCard */
