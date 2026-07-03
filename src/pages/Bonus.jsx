@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Gift, Users, CheckCircle } from 'lucide-react';
+import { Gift, Users, CheckCircle, Copy, Share2 } from 'lucide-react';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import { useAuth } from '../context/AuthContext';
@@ -8,12 +8,32 @@ import { userAPI } from '../api';
 export default function Bonus() {
   const { user } = useAuth();
   const [bonus, setBonus] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     userAPI.getDashboard().then(({ data }) => {
       setBonus(data.daily_bonus);
     }).catch(() => {});
   }, []);
+
+  const copyCode = () => {
+    navigator.clipboard.writeText(user?.referral_code || '');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const shareCode = async () => {
+    const text = `Join Crypto Stacker with my referral code: ${user?.referral_code}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Crypto Stacker', text });
+        return;
+      } catch {
+        /* fallback */
+      }
+    }
+    copyCode();
+  };
 
   const count = bonus?.referrals_today ?? 0;
   const required = bonus?.required ?? 3;
@@ -49,6 +69,29 @@ export default function Bonus() {
               className="h-full rounded-full bg-gradient-to-r from-cs-gold to-cs-orange transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
+          </div>
+
+          <div className="mb-6 rounded-xl border border-cs-gold/30 bg-cs-dark p-4 text-center">
+            <p className="mb-1 text-xs text-gray-500">Your Referral Code</p>
+            <p className="mb-3 font-mono text-2xl font-bold text-cs-gold">
+              {user?.referral_code || '------'}
+            </p>
+            <div className="flex justify-center gap-2">
+              <button
+                type="button"
+                onClick={copyCode}
+                className="gradient-btn flex items-center gap-1 rounded-xl px-4 py-2 text-sm text-white"
+              >
+                <Copy size={14} /> {copied ? 'Copied!' : 'Copy'}
+              </button>
+              <button
+                type="button"
+                onClick={shareCode}
+                className="flex items-center gap-1 rounded-xl border border-cs-gold/40 bg-cs-gold/10 px-4 py-2 text-sm font-semibold text-cs-gold"
+              >
+                <Share2 size={14} /> Share
+              </button>
+            </div>
           </div>
 
           {bonus?.awarded_today ? (

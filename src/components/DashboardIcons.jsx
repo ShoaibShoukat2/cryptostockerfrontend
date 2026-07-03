@@ -67,15 +67,23 @@ const PNG_SIZES = {
   xl: 'h-16 w-16',
 };
 
-function PngIcon({ src, alt, size = 'lg', className = '' }) {
+function PngIcon({ src, alt, size = 'lg', className = '', animate = false, tone = '' }) {
   const s = PNG_SIZES[size] || PNG_SIZES.lg;
-  return (
+  const img = (
     <img
       src={src}
       alt={alt}
-      className={`shrink-0 object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.45)] ${s} ${className}`}
+      className={`shrink-0 object-contain ${animate ? `png-icon-anim png-icon-anim-${tone}` : 'drop-shadow-[0_4px_12px_rgba(0,0,0,0.45)]'} ${s} ${className}`}
       draggable={false}
     />
+  );
+
+  if (!animate) return img;
+
+  return (
+    <span className={`png-icon-wrap png-icon-wrap-${tone}`}>
+      {img}
+    </span>
   );
 }
 
@@ -109,20 +117,20 @@ export function GlassNeonIcon({
 
 /* ─── Action Icons ─── */
 
-export function DepositNeonIcon({ size = 'lg', className = '' }) {
-  return <PngIcon src={depositIconPng} alt="Deposit" size={size} className={className} />;
+export function DepositNeonIcon({ size = 'lg', className = '', animate = true }) {
+  return <PngIcon src={depositIconPng} alt="Deposit" size={size} className={className} animate={animate} tone="deposit" />;
 }
 
-export function WithdrawNeonIcon({ size = 'lg', className = '' }) {
-  return <PngIcon src={withdrawIconPng} alt="Withdraw" size={size} className={className} />;
+export function WithdrawNeonIcon({ size = 'lg', className = '', animate = true }) {
+  return <PngIcon src={withdrawIconPng} alt="Withdraw" size={size} className={className} animate={animate} tone="withdraw" />;
 }
 
-export function PendingDepositNeonIcon({ size = 'sm', className = '' }) {
-  return <PngIcon src={depositIconPng} alt="Pending Deposit" size={size} className={className} />;
+export function PendingDepositNeonIcon({ size = 'sm', className = '', animate = true }) {
+  return <PngIcon src={depositIconPng} alt="Pending Deposit" size={size} className={className} animate={animate} tone="deposit" />;
 }
 
-export function PendingWithdrawNeonIcon({ size = 'sm', className = '' }) {
-  return <PngIcon src={withdrawIconPng} alt="Pending Withdraw" size={size} className={className} />;
+export function PendingWithdrawNeonIcon({ size = 'sm', className = '', animate = true }) {
+  return <PngIcon src={withdrawIconPng} alt="Pending Withdraw" size={size} className={className} animate={animate} tone="withdraw" />;
 }
 
 /* ─── Stat Icons ─── */

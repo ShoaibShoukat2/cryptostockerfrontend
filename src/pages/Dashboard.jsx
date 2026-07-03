@@ -230,28 +230,28 @@ export default function Dashboard() {
             type="button"
             onClick={() => navigate('/deposit')}
             whileTap={{ scale: 0.98 }}
-            className="action-card card-dark glow-purple flex items-center gap-3 p-3 text-left"
+            className="action-card action-card-deposit flex items-center gap-3 p-3 text-left"
           >
             <DepositNeonIcon size="xl" />
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold">Deposit</p>
-              <p className="text-[9px] text-gray-500">Add funds to your account</p>
+              <p className="text-sm font-bold text-cs-green">Deposit</p>
+              <p className="text-[9px] text-gray-400">Add funds to your account</p>
             </div>
-            <ChevronRight size={16} className="shrink-0 text-gray-600" />
+            <ChevronRight size={16} className="shrink-0 text-cs-green/50" />
           </motion.button>
 
           <motion.button
             type="button"
             onClick={() => navigate('/withdraw')}
             whileTap={{ scale: 0.98 }}
-            className="action-card card-dark glow-orange flex items-center gap-3 p-3 text-left"
+            className="action-card action-card-withdraw flex items-center gap-3 p-3 text-left"
           >
             <WithdrawNeonIcon size="xl" />
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold">Withdraw</p>
-              <p className="text-[9px] text-gray-500">Withdraw your earnings</p>
+              <p className="text-sm font-bold text-cs-orange">Withdraw</p>
+              <p className="text-[9px] text-gray-400">Withdraw your earnings</p>
             </div>
-            <ChevronRight size={16} className="shrink-0 text-gray-600" />
+            <ChevronRight size={16} className="shrink-0 text-cs-orange/50" />
           </motion.button>
         </div>
 

@@ -80,12 +80,12 @@ export default function Withdraw() {
       <div className="mx-auto max-w-lg px-4 pt-4">
         <Header user={user} />
 
-        <div className="card-dark glow-orange mb-4 p-6">
+        <div className="card-dark page-card-withdraw mb-4 p-6">
           <div className="mb-4 flex items-center gap-3">
             <WithdrawNeonIcon size="lg" />
             <div>
-              <h2 className="text-xl font-bold">Withdraw Funds</h2>
-              <p className="text-sm text-gray-500">Min withdrawal ${minWithdraw}</p>
+              <h2 className="text-xl font-bold text-cs-orange">Withdraw Funds</h2>
+              <p className="text-sm text-gray-400">Min withdrawal ${minWithdraw}</p>
             </div>
           </div>
 

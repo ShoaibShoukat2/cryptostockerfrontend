@@ -91,12 +91,12 @@ export default function Deposit() {
       <div className="mx-auto max-w-lg px-4 pt-4">
         <Header user={user} />
 
-        <div className="card-dark glow-purple mb-4 p-6">
+        <div className="card-dark page-card-deposit mb-4 p-6">
           <div className="mb-6 flex items-center gap-3">
             <DepositNeonIcon size="lg" />
             <div>
-              <h2 className="text-xl font-bold">Deposit Funds</h2>
-              <p className="text-sm text-gray-500">Minimum deposit ${config.min_deposit || 100}</p>
+              <h2 className="text-xl font-bold text-cs-green">Deposit Funds</h2>
+              <p className="text-sm text-gray-400">Minimum deposit ${config.min_deposit || 100}</p>
             </div>
           </div>
 

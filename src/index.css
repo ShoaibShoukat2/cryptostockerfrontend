@@ -299,6 +299,85 @@ body {
   transform: translateY(-2px);
 }
 
+.action-card-deposit {
+  background: linear-gradient(145deg, rgba(34, 197, 94, 0.14), rgba(17, 17, 17, 0.95) 45%, rgba(16, 185, 129, 0.08));
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  box-shadow: 0 0 24px rgba(34, 197, 94, 0.12), inset 0 1px 0 rgba(34, 197, 94, 0.12);
+}
+.action-card-deposit:hover {
+  border-color: rgba(34, 197, 94, 0.45);
+  box-shadow: 0 0 32px rgba(34, 197, 94, 0.2), inset 0 1px 0 rgba(34, 197, 94, 0.18);
+}
+
+.action-card-withdraw {
+  background: linear-gradient(145deg, rgba(249, 115, 22, 0.14), rgba(17, 17, 17, 0.95) 45%, rgba(245, 158, 11, 0.08));
+  border: 1px solid rgba(249, 115, 22, 0.28);
+  box-shadow: 0 0 24px rgba(249, 115, 22, 0.12), inset 0 1px 0 rgba(249, 115, 22, 0.12);
+}
+.action-card-withdraw:hover {
+  border-color: rgba(249, 115, 22, 0.45);
+  box-shadow: 0 0 32px rgba(249, 115, 22, 0.2), inset 0 1px 0 rgba(249, 115, 22, 0.18);
+}
+
+.page-card-deposit {
+  background: linear-gradient(160deg, rgba(34, 197, 94, 0.12), rgba(17, 17, 17, 0.96) 40%, rgba(16, 185, 129, 0.06));
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  box-shadow: 0 0 28px rgba(34, 197, 94, 0.14), inset 0 1px 0 rgba(34, 197, 94, 0.1);
+}
+
+.page-card-withdraw {
+  background: linear-gradient(160deg, rgba(249, 115, 22, 0.12), rgba(17, 17, 17, 0.96) 40%, rgba(245, 158, 11, 0.06));
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  box-shadow: 0 0 28px rgba(249, 115, 22, 0.14), inset 0 1px 0 rgba(249, 115, 22, 0.1);
+}
+
+.png-icon-anim {
+  animation: png-icon-float 2.8s ease-in-out infinite;
+  will-change: transform, filter;
+}
+.png-icon-anim-deposit {
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 10px rgba(34, 197, 94, 0.45));
+}
+.png-icon-anim-withdraw {
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 10px rgba(249, 115, 22, 0.45));
+}
+
+@keyframes png-icon-float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.06);
+  }
+}
+
+.png-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.png-icon-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: png-icon-pulse 2.8s ease-in-out infinite;
+}
+.png-icon-wrap-deposit::before {
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.28) 0%, transparent 70%);
+}
+.png-icon-wrap-withdraw::before {
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.28) 0%, transparent 70%);
+}
+
+@keyframes png-icon-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.92); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
+
 .pending-card {
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
