@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, EyeOff, LogIn, User, Lock } from 'lucide-react';
 import AuthLayout from '../components/AuthLayout';
@@ -7,7 +7,8 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const { login } = useAuth();
-  const [form, setForm] = useState({ username: '', password: '' });
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,7 +18,7 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      const userData = await login(form.username, form.password);
+      const userData = await login(username, password);
       if (userData.user?.is_staff) {
         window.location.href = '/admin';
       } else {
@@ -29,6 +30,8 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+  const togglePass = useCallback(() => setShowPass((v) => !v), []);
 
   return (
     <AuthLayout variant="purple">
@@ -43,30 +46,28 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <AuthInput
             label="Username"
-            value={form.username}
-            onChange={(e) => setForm({ ...form, username: e.target.value })}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             placeholder="Enter your username"
             autoComplete="username"
             required
             icon={User}
-            delay={0}
           />
 
           <AuthInput
             label="Password"
             type={showPass ? 'text' : 'password'}
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter your password"
             autoComplete="current-password"
             required
             icon={Lock}
-            delay={0.08}
             suffix={(
               <button
                 type="button"
-                onClick={() => setShowPass(!showPass)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 transition-colors hover:text-purple-400"
+                onClick={togglePass}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-purple-400"
                 aria-label={showPass ? 'Hide password' : 'Show password'}
               >
                 {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -74,14 +75,14 @@ export default function Login() {
             )}
           />
 
-          <AuthSubmitButton loading={loading} loadingText="Signing in..." icon={LogIn} delay={0.16}>
+          <AuthSubmitButton loading={loading} loadingText="Signing in..." icon={LogIn}>
             Sign In
           </AuthSubmitButton>
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-500">
           Don&apos;t have an account?{' '}
-          <Link to="/register" className="font-semibold text-purple-400 transition-colors hover:text-purple-300 hover:underline">
+          <Link to="/register" className="font-semibold text-purple-400 hover:text-purple-300 hover:underline">
             Register
           </Link>
         </p>
