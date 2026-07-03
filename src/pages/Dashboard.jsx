@@ -153,12 +153,12 @@ export default function Dashboard() {
         >
           <div className="flex gap-3">
             {/* Left: Logo emblem */}
-            <div className="shrink-0">
-              <div className="stack-emblem float-anim h-28 w-24 overflow-hidden rounded-xl sm:h-32 sm:w-28">
+            <div className="shrink-0 self-center">
+              <div className="stack-emblem flex h-24 w-24 items-center justify-center sm:h-28 sm:w-28">
                 <img
                   src={logoImg}
                   alt="Crypto Stacker"
-                  className="h-[200%] w-full object-cover object-top"
+                  className="h-full w-full object-contain"
                   draggable={false}
                 />
               </div>
