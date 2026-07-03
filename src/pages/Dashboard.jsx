@@ -166,13 +166,16 @@ export default function Dashboard() {
           <div className="flex gap-3">
             {/* Left: Logo emblem */}
             <div className="shrink-0 self-center">
-              <div className="stack-emblem flex h-24 w-24 items-center justify-center sm:h-28 sm:w-28">
+              <div className="stack-emblem flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl sm:h-28 sm:w-28">
+                <span className="stack-emblem-ring stack-emblem-ring-purple" aria-hidden="true" />
+                <span className="stack-emblem-ring stack-emblem-ring-gold" aria-hidden="true" />
                 <img
                   src={logoImg}
                   alt="Crypto Stacker"
-                  className="h-full w-full object-contain"
+                  className="stack-emblem-img h-full w-full object-contain"
                   draggable={false}
                 />
+                <span className="stack-emblem-shimmer" aria-hidden="true" />
               </div>
             </div>
 
@@ -187,22 +190,13 @@ export default function Dashboard() {
               <p className="mb-2 text-[9px] leading-snug text-gray-400 sm:text-[10px]">
                 Stack your balance and earn daily profits.
               </p>
-              <div className="mb-2 grid grid-cols-2 gap-1.5">
-                <div className="rounded-lg border border-cs-purple/25 bg-cs-purple/10 px-2 py-1.5">
-                  <p className="text-[8px] text-gray-400">Total Balance</p>
-                  <AnimatedValue
-                    value={parseFloat(profile?.total_balance || 0)}
-                    className="text-sm font-bold text-white sm:text-base"
-                  />
-                </div>
-                <div className="rounded-lg border border-cs-green/25 bg-cs-green/10 px-2 py-1.5">
-                  <p className="text-[8px] text-gray-400">Today Profit</p>
-                  <AnimatedValue
-                    value={parseFloat(data?.today_profit || 0)}
-                    className="text-sm font-bold text-cs-green sm:text-base"
-                    prefix="+$"
-                  />
-                </div>
+              <div className="mb-2 rounded-lg border border-cs-green/25 bg-cs-green/10 px-2 py-1.5">
+                <p className="text-[8px] text-gray-400">Today Profit</p>
+                <AnimatedValue
+                  value={parseFloat(data?.today_profit || 0)}
+                  className="text-sm font-bold text-cs-green sm:text-base"
+                  prefix="+$"
+                />
               </div>
               <p className="text-[9px] italic text-gray-500">Available Balance</p>
               <AnimatedValue
@@ -422,7 +416,17 @@ export default function Dashboard() {
             </div>
           )}
 
-          {market?.candles?.length > 0 && <CandlestickChart candles={market.candles} />}
+          {marketLoading ? (
+            <div className="flex h-[180px] items-center justify-center rounded-lg bg-black/20 text-xs text-gray-500">
+              Loading chart...
+            </div>
+          ) : market?.candles?.length > 0 ? (
+            <CandlestickChart candles={market.candles} />
+          ) : (
+            <div className="flex h-[180px] items-center justify-center rounded-lg bg-black/20 text-xs text-gray-500">
+              Chart data unavailable
+            </div>
+          )}
 
           <div className="mb-3 mt-3 flex flex-wrap gap-1">
             {['1m', '5m', '15m', '1H', '4H', '1D'].map((tf) => (

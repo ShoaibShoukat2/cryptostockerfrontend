@@ -1,3 +1,5 @@
+import { userAPI } from '../api';
+
 const BINANCE_BASE = 'https://data-api.binance.vision/api/v3';
 const SYMBOL = 'BTCUSDT';
 
@@ -16,7 +18,7 @@ async function fetchJson(url) {
   return res.json();
 }
 
-export async function getBtcMarket(timeframe = '15m') {
+async function fetchFromBinance(timeframe = '15m') {
   const interval = INTERVAL_MAP[timeframe] || '15m';
 
   const [ticker, klines, trades] = await Promise.all([
@@ -51,4 +53,20 @@ export async function getBtcMarket(timeframe = '15m') {
     live_trades,
     source: 'binance',
   };
+}
+
+async function fetchFromBackend(timeframe = '15m') {
+  const { data } = await userAPI.getMarket(timeframe);
+  if (!data?.candles?.length && !data?.price) {
+    throw new Error(data?.error || 'No market data');
+  }
+  return data;
+}
+
+export async function getBtcMarket(timeframe = '15m') {
+  try {
+    return await fetchFromBackend(timeframe);
+  } catch {
+    return fetchFromBinance(timeframe);
+  }
 }

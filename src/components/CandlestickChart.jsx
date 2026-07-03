@@ -1,94 +1,97 @@
-import {
-  ComposedChart,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-  Customized,
-  CartesianGrid,
-} from 'recharts';
-
 const GREEN = '#22C55E';
 const RED = '#EF4444';
 
-function Candlesticks({ xAxisMap, yAxisMap, offset, data, width }) {
-  if (!data?.length || !xAxisMap || !yAxisMap) return null;
-
-  const xAxis = xAxisMap[Object.keys(xAxisMap)[0]];
-  const yAxis = yAxisMap[Object.keys(yAxisMap)[0]];
-  if (!xAxis?.scale || !yAxis?.scale) return null;
-
-  const xScale = xAxis.scale;
-  const yScale = yAxis.scale;
-  const chartWidth = width - offset.left - offset.right;
-  const candleWidth = Math.max(3, Math.min(10, (chartWidth / data.length) * 0.6));
-  const halfW = candleWidth / 2;
-
-  const getX = (index) => {
-    const x = xScale(index);
-    if (x == null) return null;
-    const bandwidth = typeof xScale.bandwidth === 'function' ? xScale.bandwidth() : 0;
-    return x + bandwidth / 2;
-  };
-
-  return (
-    <g className="candlesticks">
-      {data.map((entry) => {
-        const x = getX(entry.name);
-        if (x == null) return null;
-
-        const color = entry.isGreen ? GREEN : RED;
-        const bodyTop = yScale(Math.max(entry.open, entry.close));
-        const bodyBottom = yScale(Math.min(entry.open, entry.close));
-        const bodyHeight = Math.max(1, bodyBottom - bodyTop);
-
-        return (
-          <g key={entry.name}>
-            <line
-              x1={x}
-              y1={yScale(entry.high)}
-              x2={x}
-              y2={yScale(entry.low)}
-              stroke={color}
-              strokeWidth={1}
-            />
-            <rect
-              x={x - halfW}
-              y={bodyTop}
-              width={candleWidth}
-              height={bodyHeight}
-              fill={color}
-            />
-          </g>
-        );
-      })}
-    </g>
-  );
-}
-
 export default function CandlestickChart({ candles = [] }) {
-  const data = candles.map((c, i) => ({
-    name: i,
-    open: c.open,
-    close: c.close,
-    high: c.high,
-    low: c.low,
-    isGreen: c.close >= c.open,
-  }));
+  if (!candles.length) return null;
 
-  if (!data.length) return null;
+  const width = 360;
+  const height = 180;
+  const padX = 8;
+  const padY = 10;
+  const chartW = width - padX * 2;
+  const chartH = height - padY * 2;
 
-  const yMin = Math.min(...data.map((d) => d.low));
-  const yMax = Math.max(...data.map((d) => d.high));
-  const padding = (yMax - yMin) * 0.06 || 1;
+  const lows = candles.map((c) => Number(c.low));
+  const highs = candles.map((c) => Number(c.high));
+  let yMin = Math.min(...lows);
+  let yMax = Math.max(...highs);
+  if (!Number.isFinite(yMin) || !Number.isFinite(yMax)) return null;
+  if (yMin === yMax) {
+    yMin -= 1;
+    yMax += 1;
+  }
+
+  const padding = (yMax - yMin) * 0.06;
+  yMin -= padding;
+  yMax += padding;
+  const yRange = yMax - yMin;
+
+  const slot = chartW / candles.length;
+  const bodyW = Math.max(3, Math.min(10, slot * 0.55));
+
+  const toY = (price) => padY + ((yMax - price) / yRange) * chartH;
+
+  const gridLines = 4;
+  const gridYs = Array.from({ length: gridLines + 1 }, (_, i) => padY + (chartH / gridLines) * i);
 
   return (
-    <ResponsiveContainer width="100%" height={180}>
-      <ComposedChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
-        <CartesianGrid stroke="#374151" strokeDasharray="3 3" vertical={false} opacity={0.35} />
-        <XAxis dataKey="name" hide />
-        <YAxis domain={[yMin - padding, yMax + padding]} hide allowDataOverflow />
-        <Customized component={(props) => <Candlesticks {...props} data={data} />} />
-      </ComposedChart>
-    </ResponsiveContainer>
+    <div className="w-full overflow-hidden rounded-lg bg-black/20">
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        className="h-[180px] w-full"
+        preserveAspectRatio="none"
+        role="img"
+        aria-label="BTC price candlestick chart"
+      >
+        {gridYs.map((y) => (
+          <line
+            key={y}
+            x1={padX}
+            y1={y}
+            x2={width - padX}
+            y2={y}
+            stroke="#374151"
+            strokeWidth={1}
+            strokeDasharray="3 3"
+            opacity={0.35}
+          />
+        ))}
+
+        {candles.map((c, i) => {
+          const open = Number(c.open);
+          const close = Number(c.close);
+          const high = Number(c.high);
+          const low = Number(c.low);
+          if (![open, close, high, low].every(Number.isFinite)) return null;
+
+          const x = padX + slot * i + slot / 2;
+          const color = close >= open ? GREEN : RED;
+          const bodyTop = toY(Math.max(open, close));
+          const bodyBottom = toY(Math.min(open, close));
+          const bodyHeight = Math.max(1.5, bodyBottom - bodyTop);
+
+          return (
+            <g key={i}>
+              <line
+                x1={x}
+                y1={toY(high)}
+                x2={x}
+                y2={toY(low)}
+                stroke={color}
+                strokeWidth={1.25}
+                vectorEffect="non-scaling-stroke"
+              />
+              <rect
+                x={x - bodyW / 2}
+                y={bodyTop}
+                width={bodyW}
+                height={bodyHeight}
+                fill={color}
+              />
+            </g>
+          );
+        })}
+      </svg>
+    </div>
   );
 }
