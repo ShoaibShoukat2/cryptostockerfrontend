@@ -9,9 +9,13 @@ export const authAPI = {
 export const userAPI = {
   getProfile: () => API.get('/profile/'),
   getDashboard: () => API.get('/dashboard/'),
+  getSiteConfig: () => API.get('/config/'),
   stack: () => API.post('/stack/'),
+  getStackLogs: () => API.get('/stack/logs/'),
   getDeposits: () => API.get('/deposits/list/'),
-  createDeposit: (data) => API.post('/deposits/', data),
+  createDeposit: (formData) => API.post('/deposits/', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
   getWithdrawals: () => API.get('/withdrawals/list/'),
   createWithdrawal: (data) => API.post('/withdrawals/', data),
   getTransactions: () => API.get('/transactions/'),
@@ -22,6 +26,8 @@ export const userAPI = {
 
 export const adminAPI = {
   getDashboard: () => API.get('/admin/dashboard/'),
+  getConfig: () => API.get('/admin/config/'),
+  updateConfig: (data) => API.patch('/admin/config/', data),
   getUsers: () => API.get('/admin/users/'),
   getUser: (id) => API.get(`/admin/users/${id}/`),
   updateUser: (id, data) => API.patch(`/admin/users/${id}/`, data),

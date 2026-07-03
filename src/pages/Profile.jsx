@@ -69,6 +69,24 @@ export default function Profile() {
           ))}
         </div>
 
+        <div className="card-dark mb-4 grid grid-cols-2 gap-2 p-3">
+          {[
+            { label: 'About Us', path: '/about' },
+            { label: 'Help & Support', path: '/help' },
+            { label: 'Extra Bonus', path: '/bonus' },
+            { label: 'My Team', path: '/team' },
+          ].map(({ label, path }) => (
+            <button
+              key={path}
+              type="button"
+              onClick={() => navigate(path)}
+              className="rounded-xl border border-cs-border bg-cs-dark py-2.5 text-xs font-semibold text-gray-300 hover:border-cs-purple/40 hover:text-cs-purple"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
         <button
           type="button"
           onClick={handleLogout}

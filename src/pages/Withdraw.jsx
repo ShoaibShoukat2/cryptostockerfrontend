@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock } from 'lucide-react';
+import { Clock, AlertCircle } from 'lucide-react';
 import { userAPI } from '../api';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
@@ -12,15 +12,28 @@ const statusStyle = {
   rejected: 'text-cs-red bg-cs-red/10',
 };
 
+const RULES = [
+  'You cannot submit 2 withdrawals at once. Wait until your first withdrawal is completed.',
+  'Withdrawals are processed within 24–72 hours.',
+  'You can withdraw your profit anytime.',
+  'Investment is locked for 7 days — you cannot withdraw deposited amount for 7 days.',
+  'Minimum withdrawal amount is $20.',
+];
+
 export default function Withdraw() {
   const { user, refreshUser } = useAuth();
   const [amount, setAmount] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
+  const [minWithdraw, setMinWithdraw] = useState(20);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const [withdrawals, setWithdrawals] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(true);
+
+  const withdrawable = parseFloat(user?.withdrawable_balance ?? user?.available_balance ?? 0);
+  const locked = parseFloat(user?.locked_investment ?? 0);
+  const hasPending = withdrawals.some((w) => w.status === 'pending');
 
   const loadWithdrawals = async () => {
     try {
@@ -36,6 +49,7 @@ export default function Withdraw() {
   useEffect(() => {
     refreshUser();
     loadWithdrawals();
+    userAPI.getSiteConfig().then(({ data }) => setMinWithdraw(parseFloat(data.min_withdraw || 20))).catch(() => {});
   }, [refreshUser]);
 
   const handleSubmit = async (e) => {
@@ -48,7 +62,7 @@ export default function Withdraw() {
         amount: parseFloat(amount),
         wallet_address: walletAddress,
       });
-      setSuccess('Withdrawal request submitted successfully!');
+      setSuccess('Withdrawal request submitted! Processing time: 24–72 hours.');
       setAmount('');
       setWalletAddress('');
       await loadWithdrawals();
@@ -71,26 +85,44 @@ export default function Withdraw() {
             <WithdrawNeonIcon size="lg" />
             <div>
               <h2 className="text-xl font-bold">Withdraw Funds</h2>
-              <p className="text-sm text-gray-500">Withdraw your earnings</p>
+              <p className="text-sm text-gray-500">Min withdrawal ${minWithdraw}</p>
             </div>
           </div>
 
-          <div className="mb-4 rounded-xl border border-cs-border bg-cs-dark p-3">
-            <p className="text-xs text-gray-500">Available Balance</p>
-            <p className="text-2xl font-bold text-cs-green">
-              ${parseFloat(user?.available_balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-            </p>
+          <div className="mb-3 grid grid-cols-2 gap-2">
+            <div className="rounded-xl border border-cs-green/30 bg-cs-green/10 p-3">
+              <p className="text-[10px] text-gray-500">Withdrawable</p>
+              <p className="text-lg font-bold text-cs-green">${withdrawable.toFixed(2)}</p>
+            </div>
+            <div className="rounded-xl border border-cs-border bg-cs-dark p-3">
+              <p className="text-[10px] text-gray-500">Locked (7 days)</p>
+              <p className="text-lg font-bold text-cs-gold">${locked.toFixed(2)}</p>
+            </div>
+          </div>
+
+          {hasPending && (
+            <div className="mb-4 flex items-start gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-3 text-xs text-yellow-400">
+              <AlertCircle size={16} className="mt-0.5 shrink-0" />
+              You have a pending withdrawal. Please wait until it is completed before submitting another.
+            </div>
+          )}
+
+          <div className="mb-4 rounded-xl border border-cs-border/50 bg-cs-dark/60 p-4">
+            <p className="mb-2 text-xs font-bold text-gray-300">Withdrawal Rules</p>
+            <ul className="space-y-1.5">
+              {RULES.map((rule) => (
+                <li key={rule} className="flex gap-2 text-[10px] leading-relaxed text-gray-500">
+                  <span className="text-cs-orange">•</span> {rule}
+                </li>
+              ))}
+            </ul>
           </div>
 
           {success && (
-            <div className="mb-4 rounded-lg border border-cs-green/30 bg-cs-green/10 p-3 text-sm text-cs-green">
-              {success}
-            </div>
+            <div className="mb-4 rounded-lg border border-cs-green/30 bg-cs-green/10 p-3 text-sm text-cs-green">{success}</div>
           )}
           {error && (
-            <div className="mb-4 rounded-lg border border-cs-red/30 bg-cs-red/10 p-3 text-sm text-cs-red">
-              {error}
-            </div>
+            <div className="mb-4 rounded-lg border border-cs-red/30 bg-cs-red/10 p-3 text-sm text-cs-red">{error}</div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -99,32 +131,34 @@ export default function Withdraw() {
               <input
                 type="number"
                 step="0.01"
-                min="1"
-                max={user?.available_balance}
+                min={minWithdraw}
+                max={withdrawable}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-3 text-lg font-bold focus:border-cs-orange focus:outline-none"
-                placeholder="0.00"
+                placeholder="20.00"
                 required
+                disabled={hasPending}
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-gray-400">Wallet Address</label>
+              <label className="mb-1 block text-xs text-gray-400">Wallet Address (BEP20 / TRC20)</label>
               <input
                 type="text"
                 value={walletAddress}
                 onChange={(e) => setWalletAddress(e.target.value)}
                 className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-3 font-mono text-sm focus:border-cs-orange focus:outline-none"
-                placeholder="Enter your crypto wallet address"
+                placeholder="Enter your USDT wallet address"
                 required
+                disabled={hasPending}
               />
             </div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || hasPending}
               className="gradient-btn w-full rounded-xl py-3 font-bold text-white disabled:opacity-50"
             >
-              {loading ? 'Submitting...' : 'Submit Withdrawal Request'}
+              {loading ? 'Submitting...' : hasPending ? 'Pending Withdrawal Active' : 'Submit Withdrawal Request'}
             </button>
           </form>
         </div>

@@ -180,23 +180,27 @@ export default function AdminDashboard() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedUser, setSelectedUser] = useState(null);
+  const [siteConfig, setSiteConfig] = useState(null);
+  const [configSaving, setConfigSaving] = useState(false);
 
   const loadAll = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const [dashRes, depRes, witRes, userRes, txRes] = await Promise.all([
+      const [dashRes, depRes, witRes, userRes, txRes, cfgRes] = await Promise.all([
         adminAPI.getDashboard(),
         adminAPI.getDeposits(),
         adminAPI.getWithdrawals(),
         adminAPI.getUsers(),
         adminAPI.getTransactions(),
+        adminAPI.getConfig(),
       ]);
       setStats(dashRes.data);
       setDeposits(depRes.data);
       setWithdrawals(witRes.data);
       setUsers(userRes.data);
       setTransactions(txRes.data);
+      setSiteConfig(cfgRes.data);
     } catch {
       setError('Failed to load admin data.');
     } finally {
@@ -381,8 +385,8 @@ export default function AdminDashboard() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-cs-border text-left text-[10px] text-gray-500">
-                  <th className="py-2">User</th><th className="py-2">Amount</th><th className="py-2">TX ID</th>
-                  <th className="py-2">Note</th><th className="py-2">Status</th><th className="py-2">Date</th><th className="py-2 text-right">Actions</th>
+                  <th className="py-2">User</th><th className="py-2">Amount</th><th className="py-2">Network</th>
+                  <th className="py-2">Screenshot</th><th className="py-2">Status</th><th className="py-2">Date</th><th className="py-2 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -390,8 +394,12 @@ export default function AdminDashboard() {
                   <tr key={d.id} className="border-b border-cs-border/30">
                     <td className="py-3 font-medium">{d.username}</td>
                     <td className="py-3 font-bold text-cs-green">${parseFloat(d.amount).toFixed(2)}</td>
-                    <td className="py-3 font-mono text-[10px] text-gray-500">{String(d.transaction_id).slice(0, 10)}...</td>
-                    <td className="py-3 text-xs text-gray-400">{d.note || '—'}</td>
+                    <td className="py-3 text-xs text-cs-purple">{d.network || '—'}</td>
+                    <td className="py-3">
+                      {d.screenshot_url ? (
+                        <a href={d.screenshot_url} target="_blank" rel="noopener noreferrer" className="text-xs text-cs-purple hover:underline">View</a>
+                      ) : '—'}
+                    </td>
                     <td className="py-3"><StatusBadge status={d.status} /></td>
                     <td className="py-3 text-xs text-gray-500">{new Date(d.created_at).toLocaleString()}</td>
                     <td className="py-3 text-right">
@@ -484,6 +492,65 @@ export default function AdminDashboard() {
               </tbody>
             </table>
             {filteredTx.length === 0 && <p className="py-8 text-center text-gray-500">No transactions found</p>}
+          </div>
+        </div>
+      )}
+
+      {/* SETTINGS */}
+      {tab === 'settings' && siteConfig && (
+        <div className="card-dark max-w-2xl p-6">
+          <h2 className="mb-4 text-lg font-bold">Platform Settings</h2>
+          <p className="mb-6 text-xs text-gray-500">Configure deposit addresses, Telegram, and business rules.</p>
+          <div className="space-y-4">
+            {[
+              { key: 'bep20_address', label: 'BEP20 USDT Address' },
+              { key: 'trc20_address', label: 'TRC20 USDT Address' },
+              { key: 'telegram_link', label: 'Telegram Support Link' },
+              { key: 'min_deposit', label: 'Minimum Deposit ($)', type: 'number' },
+              { key: 'min_withdraw', label: 'Minimum Withdraw ($)', type: 'number' },
+              { key: 'referral_commission_rate', label: 'Referral Commission (0.12 = 12%)', type: 'number', step: '0.01' },
+              { key: 'daily_bonus_amount', label: 'Daily Bonus Amount ($)', type: 'number' },
+              { key: 'daily_bonus_referrals', label: 'Referrals needed for daily bonus', type: 'number' },
+              { key: 'investment_lock_days', label: 'Investment Lock (days)', type: 'number' },
+            ].map(({ key, label, type = 'text', step }) => (
+              <div key={key}>
+                <label className="mb-1 block text-xs text-gray-400">{label}</label>
+                <input
+                  type={type}
+                  step={step}
+                  value={siteConfig[key] ?? ''}
+                  onChange={(e) => setSiteConfig({ ...siteConfig, [key]: e.target.value })}
+                  className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+                />
+              </div>
+            ))}
+            <div>
+              <label className="mb-1 block text-xs text-gray-400">About Us Text</label>
+              <textarea
+                value={siteConfig.about_text || ''}
+                onChange={(e) => setSiteConfig({ ...siteConfig, about_text: e.target.value })}
+                rows={4}
+                className="w-full resize-none rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+              />
+            </div>
+            <button
+              type="button"
+              disabled={configSaving}
+              onClick={async () => {
+                setConfigSaving(true);
+                try {
+                  const { data } = await adminAPI.updateConfig(siteConfig);
+                  setSiteConfig(data);
+                } catch {
+                  alert('Failed to save settings');
+                } finally {
+                  setConfigSaving(false);
+                }
+              }}
+              className="gradient-btn rounded-xl px-6 py-2.5 text-sm font-bold text-white disabled:opacity-50"
+            >
+              {configSaving ? 'Saving...' : 'Save Settings'}
+            </button>
           </div>
         </div>
       )}

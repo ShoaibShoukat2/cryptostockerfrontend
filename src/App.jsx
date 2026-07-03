@@ -8,6 +8,9 @@ import Withdraw from './pages/Withdraw';
 import Team from './pages/Team';
 import Transactions from './pages/Transactions';
 import Profile from './pages/Profile';
+import About from './pages/About';
+import HelpSupport from './pages/HelpSupport';
+import Bonus from './pages/Bonus';
 import AdminDashboard from './pages/AdminDashboard';
 
 function PrivateRoute({ children, adminOnly = false }) {
@@ -45,6 +48,9 @@ export default function App() {
           <Route path="/team" element={<PrivateRoute><Team /></PrivateRoute>} />
           <Route path="/transactions" element={<PrivateRoute><Transactions /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/about" element={<PrivateRoute><About /></PrivateRoute>} />
+          <Route path="/help" element={<PrivateRoute><HelpSupport /></PrivateRoute>} />
+          <Route path="/bonus" element={<PrivateRoute><Bonus /></PrivateRoute>} />
           <Route path="/admin" element={<PrivateRoute adminOnly><AdminDashboard /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>

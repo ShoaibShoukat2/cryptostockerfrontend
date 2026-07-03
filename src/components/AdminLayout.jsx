@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Users, ArrowDownToLine, ArrowUpFromLine,
-  Receipt, LogOut, Shield, Menu, X, RefreshCw,
+  Receipt, LogOut, Shield, Menu, X, RefreshCw, Settings,
 } from 'lucide-react';
 import { Logo } from './Logo';
 
@@ -10,6 +10,7 @@ const navItems = [
   { id: 'deposits', icon: ArrowDownToLine, label: 'Deposits' },
   { id: 'withdrawals', icon: ArrowUpFromLine, label: 'Withdrawals' },
   { id: 'transactions', icon: Receipt, label: 'Transactions' },
+  { id: 'settings', icon: Settings, label: 'Settings' },
 ];
 
 export default function AdminLayout({

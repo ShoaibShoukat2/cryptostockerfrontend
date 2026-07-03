@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Copy, Share2 } from 'lucide-react';
+import { Copy, Share2, CheckCircle, Lock } from 'lucide-react';
 import { userAPI } from '../api';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
@@ -61,7 +61,10 @@ export default function Team() {
         <div className="card-dark glow-purple mb-4 p-6">
           <div className="mb-4 flex items-center gap-3">
             <img src={referralIconPng} alt="My Team" className="h-10 w-10 object-contain" draggable={false} />
-            <h2 className="text-xl font-bold">My Team</h2>
+            <div>
+              <h2 className="text-xl font-bold">My Team</h2>
+              <p className="text-xs text-cs-gold">12% commission on deposits</p>
+            </div>
           </div>
 
           <div className="mb-4 rounded-xl border border-cs-border bg-cs-dark p-4 text-center">
@@ -80,35 +83,71 @@ export default function Team() {
           <div className="mb-4 grid grid-cols-3 gap-3">
             <div className="rounded-xl border border-cs-border bg-cs-dark p-3 text-center">
               <p className="text-xl font-bold text-cs-purple">{user?.total_referrals || 0}</p>
-              <p className="text-[10px] text-gray-500">Total</p>
+              <p className="text-[10px] text-gray-500">Direct</p>
             </div>
             <div className="rounded-xl border border-cs-border bg-cs-dark p-3 text-center">
-              <p className="text-xl font-bold text-cs-green">{user?.active_referrals || 0}</p>
-              <p className="text-[10px] text-gray-500">Active</p>
+              <p className="text-xl font-bold text-cs-green">{data?.referral_levels?.[0]?.indirect_members ?? 0}</p>
+              <p className="text-[10px] text-gray-500">Indirect</p>
             </div>
             <div className="rounded-xl border border-cs-border bg-cs-dark p-3 text-center">
               <p className="text-xl font-bold text-cs-gold">${parseFloat(user?.total_referral_bonus || 0).toFixed(0)}</p>
-              <p className="text-[10px] text-gray-500">Bonus</p>
+              <p className="text-[10px] text-gray-500">Commission</p>
             </div>
           </div>
 
-          <h3 className="mb-3 text-sm font-semibold">Team Levels</h3>
+          <h3 className="mb-3 text-sm font-semibold">Referral Tier Levels</h3>
+          <p className="mb-4 text-[10px] text-gray-500">
+            Higher tiers unlock greater daily stack profit on your total balance.
+          </p>
           {data?.referral_levels?.map((level) => (
-            <div key={level.level} className="flex items-center justify-between border-b border-cs-border py-3">
-              <div className="flex items-center gap-2">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
-                  level.level === 1 ? 'bg-cs-purple/20 text-cs-purple' :
-                  level.level === 2 ? 'bg-cs-green/20 text-cs-green' :
-                  'bg-cs-gold/20 text-cs-gold'
-                }`}>
-                  L{level.level}
+            <div
+              key={level.level}
+              className={`mb-3 rounded-xl border p-4 ${
+                level.current
+                  ? 'border-cs-purple/50 bg-cs-purple/10'
+                  : level.unlocked
+                    ? 'border-cs-green/30 bg-cs-green/5'
+                    : 'border-cs-border/50 bg-cs-dark/40'
+              }`}
+            >
+              <div className="mb-2 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-cs-purple/20 text-xs font-bold text-cs-purple">
+                    L{level.level}
+                  </span>
+                  <div>
+                    <p className="text-sm font-bold">Level {level.level}</p>
+                    <p className="text-xs text-cs-green">{level.profit_percent} daily profit</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-medium">Level {level.level} Team</p>
-                  <p className="text-[10px] text-gray-500">{level.members} members</p>
+                {level.current && (
+                  <span className="rounded-full bg-cs-purple/30 px-2 py-0.5 text-[9px] font-bold text-cs-purple">CURRENT</span>
+                )}
+                {level.unlocked && !level.current && (
+                  <CheckCircle size={16} className="text-cs-green" />
+                )}
+                {!level.unlocked && <Lock size={14} className="text-gray-600" />}
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-[10px]">
+                <div className="rounded-lg bg-black/30 p-2">
+                  <p className="text-gray-500">Direct Members</p>
+                  <p className={`font-bold ${level.direct_members >= level.direct_required ? 'text-cs-green' : 'text-white'}`}>
+                    {level.direct_members} / {level.direct_required}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-black/30 p-2">
+                  <p className="text-gray-500">Indirect Members</p>
+                  <p className={`font-bold ${level.indirect_members >= level.indirect_required ? 'text-cs-green' : 'text-white'}`}>
+                    {level.indirect_members} / {level.indirect_required}
+                  </p>
+                </div>
+                <div className="col-span-2 rounded-lg bg-black/30 p-2">
+                  <p className="text-gray-500">Your Total Deposit</p>
+                  <p className={`font-bold ${level.user_deposit >= level.deposit_required ? 'text-cs-green' : 'text-white'}`}>
+                    ${level.user_deposit.toFixed(2)} / ${level.deposit_required.toFixed(0)}
+                  </p>
                 </div>
               </div>
-              <p className="text-sm font-bold text-cs-green">${level.earnings.toFixed(2)}</p>
             </div>
           ))}
         </div>

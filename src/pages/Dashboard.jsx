@@ -16,6 +16,9 @@ import {
   DepositNeonIcon, WithdrawNeonIcon, PendingDepositNeonIcon, PendingWithdrawNeonIcon,
   GiftNeonIcon, ReferralNeonIcon, SecureNeonIcon, ProfitsNeonIcon, InstantNeonIcon, SupportNeonIcon,
 } from '../components/DashboardIcons';
+import StackPreviewOverlay from '../components/StackPreviewOverlay';
+import StackResultModal from '../components/StackResultModal';
+import ExtraBonusFab from '../components/ExtraBonusFab';
 import logoImg from '../assets/logo.jpeg';
 
 export default function Dashboard() {
@@ -24,6 +27,8 @@ export default function Dashboard() {
   const [data, setData] = useState(null);
   const [market, setMarket] = useState(null);
   const [stacking, setStacking] = useState(false);
+  const [stackPreview, setStackPreview] = useState(false);
+  const [stackResult, setStackResult] = useState(null);
   const [copied, setCopied] = useState(false);
   const [timeframe, setTimeframe] = useState('15m');
   const [error, setError] = useState('');
@@ -80,10 +85,17 @@ export default function Dashboard() {
     return n.toLocaleString();
   };
 
-  const handleStack = async () => {
+  const handleStack = () => {
+    if (!profile?.can_stack || stacking) return;
+    setStackPreview(true);
+  };
+
+  const executeStack = async () => {
+    setStackPreview(false);
     setStacking(true);
     try {
-      await userAPI.stack();
+      const { data } = await userAPI.stack();
+      setStackResult(data.stack_result);
       await refreshUser();
       await loadData();
     } catch (err) {
@@ -168,7 +180,9 @@ export default function Dashboard() {
             <div className="min-w-0 flex-1">
               <div className="mb-1 flex flex-wrap items-center gap-1.5">
                 <h3 className="text-xs font-bold tracking-wide sm:text-sm">STACK YOUR BALANCE</h3>
-                <span className="rounded bg-cs-purple/25 px-1.5 py-0.5 text-[8px] font-bold text-cs-purple">24H</span>
+                <span className="rounded bg-cs-purple/25 px-1.5 py-0.5 text-[8px] font-bold text-cs-purple">
+                  {data?.profit_percent || profile?.profit_percent || '1.4%'}
+                </span>
               </div>
               <p className="mb-2 text-[9px] leading-snug text-gray-400 sm:text-[10px]">
                 Stack your balance and earn daily profits.
@@ -298,7 +312,8 @@ export default function Dashboard() {
               <div className="refer-gift-area mb-3 flex h-20 items-center justify-center rounded-xl">
                 <GiftNeonIcon size="xl" />
               </div>
-              <p className="mb-2 text-[10px] text-gray-400">Your Referral Code</p>
+              <p className="mb-1 text-[10px] text-gray-400">Your Referral Code</p>
+              <p className="mb-2 text-[9px] text-cs-gold">12% commission on every team deposit</p>
               <div className="mb-3 flex gap-2">
                 <div className="flex-1 rounded-xl border border-cs-border bg-cs-dark px-3 py-2 font-mono text-sm font-bold text-cs-gold">
                   {profile?.referral_code || '------'}
@@ -444,13 +459,15 @@ export default function Dashboard() {
         {/* Footer features */}
         <div className="mb-4 grid grid-cols-4 gap-2">
           {[
-            { Icon: SecureNeonIcon, label: 'Secure & Safe', sub: 'Bank-level security' },
-            { Icon: ProfitsNeonIcon, label: 'Daily Profits', sub: 'Earn consistent returns' },
-            { Icon: InstantNeonIcon, label: 'Instant Withdraw', sub: 'Withdraw anytime' },
-            { Icon: SupportNeonIcon, label: '24/7 Support', sub: 'Always here to help' },
-          ].map(({ Icon, label, sub }, i) => (
-            <motion.div
+            { Icon: SecureNeonIcon, label: 'Secure & Safe', sub: 'Bank-level security', path: '/about' },
+            { Icon: ProfitsNeonIcon, label: 'Daily Profits', sub: data?.profit_percent || '1.4% daily', path: null },
+            { Icon: InstantNeonIcon, label: 'Withdraw', sub: 'Profit anytime', path: '/withdraw' },
+            { Icon: SupportNeonIcon, label: '24/7 Support', sub: 'Telegram help', path: '/help' },
+          ].map(({ Icon, label, sub, path }, i) => (
+            <motion.button
               key={label}
+              type="button"
+              onClick={() => path && navigate(path)}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 + i * 0.08 }}
@@ -459,10 +476,21 @@ export default function Dashboard() {
               <Icon size="sm" className="mb-1.5" />
               <p className="text-[8px] font-semibold">{label}</p>
               <p className="text-[7px] text-gray-600">{sub}</p>
-            </motion.div>
+            </motion.button>
           ))}
         </div>
       </div>
+
+      <ExtraBonusFab dailyBonus={data?.daily_bonus} />
+      <StackPreviewOverlay
+        active={stackPreview}
+        onComplete={executeStack}
+        balance={profile?.total_balance}
+        profitPercent={data?.profit_percent || profile?.profit_percent}
+      />
+      {stackResult && (
+        <StackResultModal result={stackResult} onClose={() => setStackResult(null)} />
+      )}
       <BottomNav />
     </div>
   );
