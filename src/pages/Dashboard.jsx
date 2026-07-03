@@ -218,7 +218,7 @@ export default function Dashboard() {
             whileTap={{ scale: 0.98 }}
             className="action-card card-dark glow-purple flex items-center gap-3 p-3 text-left"
           >
-            <DepositNeonIcon size="lg" />
+            <DepositNeonIcon size="xl" />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-bold">Deposit</p>
               <p className="text-[9px] text-gray-500">Add funds to your account</p>
@@ -232,7 +232,7 @@ export default function Dashboard() {
             whileTap={{ scale: 0.98 }}
             className="action-card card-dark glow-orange flex items-center gap-3 p-3 text-left"
           >
-            <WithdrawNeonIcon size="lg" />
+            <WithdrawNeonIcon size="xl" />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-bold">Withdraw</p>
               <p className="text-[9px] text-gray-500">Withdraw your earnings</p>
@@ -296,7 +296,7 @@ export default function Dashboard() {
             {/* Left */}
             <div className="min-w-0 flex-1">
               <div className="refer-gift-area mb-3 flex h-20 items-center justify-center rounded-xl">
-                <GiftNeonIcon size="lg" />
+                <GiftNeonIcon size="xl" />
               </div>
               <p className="mb-2 text-[10px] text-gray-400">Your Referral Code</p>
               <div className="mb-3 flex gap-2">
@@ -336,19 +336,15 @@ export default function Dashboard() {
                   <p className="text-[8px] text-gray-500">Referral Bonus</p>
                 </div>
               </div>
-              {data?.referral_levels?.map((level) => {
-                const levelColors = ['purple', 'blue', 'green'];
-                const variant = levelColors[(level.level - 1) % 3];
-                return (
+              {data?.referral_levels?.map((level) => (
                   <div key={level.level} className="flex items-center justify-between border-t border-cs-border/50 py-1.5">
                     <div className="flex items-center gap-1.5">
-                      <ReferralNeonIcon variant={variant} size="sm" />
+                      <ReferralNeonIcon size="sm" />
                       <span className="text-[9px] text-gray-400">Level {level.level}</span>
                     </div>
                     <span className="text-[9px] font-semibold text-cs-green">${level.earnings.toFixed(2)}</span>
                   </div>
-                );
-              })}
+              ))}
             </div>
           </div>
         </motion.div>

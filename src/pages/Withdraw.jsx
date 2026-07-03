@@ -68,7 +68,7 @@ export default function Withdraw() {
 
         <div className="card-dark glow-orange mb-4 p-6">
           <div className="mb-4 flex items-center gap-3">
-            <WithdrawNeonIcon size="md" />
+            <WithdrawNeonIcon size="lg" />
             <div>
               <h2 className="text-xl font-bold">Withdraw Funds</h2>
               <p className="text-sm text-gray-500">Withdraw your earnings</p>

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Users, Copy, Share2 } from 'lucide-react';
+import { Copy, Share2 } from 'lucide-react';
 import { userAPI } from '../api';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import { useAuth } from '../context/AuthContext';
+import { referralIconPng } from '../components/DashboardIcons';
 
 export default function Team() {
   const { user, refreshUser } = useAuth();
@@ -59,7 +60,7 @@ export default function Team() {
         <Header user={user} notifications={data?.unread_notifications || 0} />
         <div className="card-dark glow-purple mb-4 p-6">
           <div className="mb-4 flex items-center gap-3">
-            <Users size={24} className="text-cs-purple" />
+            <img src={referralIconPng} alt="My Team" className="h-10 w-10 object-contain" draggable={false} />
             <h2 className="text-xl font-bold">My Team</h2>
           </div>
 

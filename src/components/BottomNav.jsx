@@ -1,14 +1,15 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, ArrowDownToLine, ArrowUpFromLine, Users, Receipt, User } from 'lucide-react';
+import { LayoutDashboard, Receipt, User } from 'lucide-react';
+import { depositIconPng, withdrawIconPng, referralIconPng } from './DashboardIcons';
 
 const navItems = [
-  { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/deposit', icon: ArrowDownToLine, label: 'Deposit' },
-  { path: '/withdraw', icon: ArrowUpFromLine, label: 'Withdraw' },
-  { path: '/team', icon: Users, label: 'Team' },
-  { path: '/transactions', icon: Receipt, label: 'Transactions' },
-  { path: '/profile', icon: User, label: 'Profile' },
+  { path: '/dashboard', type: 'lucide', icon: LayoutDashboard, label: 'Dashboard' },
+  { path: '/deposit', type: 'img', src: depositIconPng, label: 'Deposit' },
+  { path: '/withdraw', type: 'img', src: withdrawIconPng, label: 'Withdraw' },
+  { path: '/team', type: 'img', src: referralIconPng, label: 'Team' },
+  { path: '/transactions', type: 'lucide', icon: Receipt, label: 'Transactions' },
+  { path: '/profile', type: 'lucide', icon: User, label: 'Profile' },
 ];
 
 export default function BottomNav() {
@@ -18,7 +19,7 @@ export default function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-black">
       <div className="mx-auto flex max-w-lg items-center justify-around px-1 py-2">
-        {navItems.map(({ path, icon: Icon, label }) => {
+        {navItems.map(({ path, type, icon: Icon, src, label }) => {
           const active = location.pathname === path;
           return (
             <motion.button
@@ -36,10 +37,19 @@ export default function BottomNav() {
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
-              <Icon
-                size={20}
-                className={`relative z-10 ${active ? 'drop-shadow-[0_0_10px_rgba(139,92,246,0.9)]' : ''}`}
-              />
+              {type === 'img' ? (
+                <img
+                  src={src}
+                  alt={label}
+                  className={`relative z-10 h-6 w-6 object-contain ${active ? 'drop-shadow-[0_0_10px_rgba(139,92,246,0.9)]' : ''}`}
+                  draggable={false}
+                />
+              ) : (
+                <Icon
+                  size={20}
+                  className={`relative z-10 ${active ? 'drop-shadow-[0_0_10px_rgba(139,92,246,0.9)]' : ''}`}
+                />
+              )}
               <span className={`relative z-10 text-[9px] font-medium ${active ? 'font-bold' : ''}`}>
                 {label}
               </span>

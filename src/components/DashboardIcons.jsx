@@ -1,6 +1,7 @@
-import depositIcon from '../assets/depositIcon.png';
-import withdrawalIcon from '../assets/withdrawalIcon.png';
-import referralIcon from '../assets/referralIcon.png';
+// depositIcon.png = withdraw art, withdrawalIcon.png = deposit art (filenames swapped)
+import depositIconPng from '../assets/withdrawalIcon.png';
+import withdrawIconPng from '../assets/depositIcon.png';
+import referralIconPng from '../assets/referralIcon.png';
 
 const VARIANTS = {
   purple: {
@@ -63,6 +64,7 @@ const PNG_SIZES = {
   sm: 'h-10 w-10',
   md: 'h-12 w-12',
   lg: 'h-14 w-14',
+  xl: 'h-16 w-16',
 };
 
 function PngIcon({ src, alt, size = 'lg', className = '' }) {
@@ -71,11 +73,13 @@ function PngIcon({ src, alt, size = 'lg', className = '' }) {
     <img
       src={src}
       alt={alt}
-      className={`shrink-0 object-contain ${s} ${className}`}
+      className={`shrink-0 object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.45)] ${s} ${className}`}
       draggable={false}
     />
   );
 }
+
+export { depositIconPng, withdrawIconPng, referralIconPng, PngIcon };
 
 export function GlassNeonIcon({
   variant = 'purple',
@@ -106,19 +110,19 @@ export function GlassNeonIcon({
 /* ─── Action Icons ─── */
 
 export function DepositNeonIcon({ size = 'lg', className = '' }) {
-  return <PngIcon src={depositIcon} alt="Deposit" size={size} className={className} />;
+  return <PngIcon src={depositIconPng} alt="Deposit" size={size} className={className} />;
 }
 
 export function WithdrawNeonIcon({ size = 'lg', className = '' }) {
-  return <PngIcon src={withdrawalIcon} alt="Withdraw" size={size} className={className} />;
+  return <PngIcon src={withdrawIconPng} alt="Withdraw" size={size} className={className} />;
 }
 
 export function PendingDepositNeonIcon({ size = 'sm', className = '' }) {
-  return <PngIcon src={depositIcon} alt="Pending Deposit" size={size} className={className} />;
+  return <PngIcon src={depositIconPng} alt="Pending Deposit" size={size} className={className} />;
 }
 
 export function PendingWithdrawNeonIcon({ size = 'sm', className = '' }) {
-  return <PngIcon src={withdrawalIcon} alt="Pending Withdraw" size={size} className={className} />;
+  return <PngIcon src={withdrawIconPng} alt="Pending Withdraw" size={size} className={className} />;
 }
 
 /* ─── Stat Icons ─── */
@@ -143,11 +147,11 @@ export function BalanceNeonIcon({ size = 'sm', className = '' }) {
 }
 
 export function DepositStatNeonIcon({ size = 'sm', className = '' }) {
-  return <PngIcon src={depositIcon} alt="Total Deposit" size={size} className={className} />;
+  return <PngIcon src={depositIconPng} alt="Total Deposit" size={size} className={className} />;
 }
 
 export function WithdrawStatNeonIcon({ size = 'sm', className = '' }) {
-  return <PngIcon src={withdrawalIcon} alt="Total Withdraw" size={size} className={className} />;
+  return <PngIcon src={withdrawIconPng} alt="Total Withdraw" size={size} className={className} />;
 }
 
 export function ProfitNeonIcon({ size = 'sm', className = '' }) {
@@ -236,11 +240,11 @@ export function SupportNeonIcon({ size = 'sm', className = '' }) {
 }
 
 export function ReferralNeonIcon({ size = 'sm', className = '' }) {
-  return <PngIcon src={referralIcon} alt="Referral" size={size} className={className} />;
+  return <PngIcon src={referralIconPng} alt="Referral" size={size} className={className} />;
 }
 
 export function GiftNeonIcon({ size = 'md', className = '' }) {
-  return <PngIcon src={referralIcon} alt="Refer & Earn" size={size} className={className} />;
+  return <PngIcon src={referralIconPng} alt="Refer & Earn" size={size} className={className} />;
 }
 
 /* Stat icon map for StatCard */
