@@ -1,7 +1,7 @@
 // depositIcon.png = withdraw art, withdrawalIcon.png = deposit art (filenames swapped)
 import depositIconPng from '../assets/withdrawalIcon.png';
 import withdrawIconPng from '../assets/depositIcon.png';
-import referralIconPng from '../assets/referralIcon.png';
+import referralIconPng from '../assets/referralicon.png';
 
 const VARIANTS = {
   purple: {
