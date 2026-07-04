@@ -32,27 +32,30 @@ export default function Header({ user, notifications = 0 }) {
             <img
               src={navbarLogo}
               alt="Crypto Stacker"
-              className="h-12 w-auto max-w-[150px] object-contain object-left sm:h-14 sm:max-w-[180px] md:max-w-[200px]"
+              className="h-10 w-auto max-w-[100px] object-contain object-left sm:h-14 sm:max-w-[180px] md:max-w-[200px]"
               draggable={false}
             />
           </motion.button>
 
-          <div className="hidden min-w-0 sm:block">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <p className="truncate text-sm font-bold text-white">
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 flex-wrap items-center gap-1 sm:gap-1.5">
+              <p className="truncate text-xs font-bold text-white sm:text-sm">
                 Hi, {name}
               </p>
               <motion.span
                 animate={{ rotate: [0, 14, -8, 0] }}
                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                className="shrink-0"
               >
                 <Sparkles size={12} className="text-amber-400" />
               </motion.span>
-              <span className="rounded-full bg-gradient-to-r from-purple-600/30 to-amber-500/30 px-2 py-0.5 text-[8px] font-bold text-amber-300">
+              <span className="shrink-0 rounded-full bg-gradient-to-r from-purple-600/30 to-amber-500/30 px-1.5 py-0.5 text-[7px] font-bold text-amber-300 sm:px-2 sm:text-[8px]">
                 VIP {vipLevel}
               </span>
             </div>
-            <p className="text-[10px] text-gray-500">Welcome back · Ready to stack</p>
+            <p className="truncate text-[9px] text-gray-500 sm:text-[10px]">
+              Welcome, {name}
+            </p>
           </div>
         </div>
 
