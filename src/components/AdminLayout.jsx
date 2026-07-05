@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Users, ArrowDownToLine, ArrowUpFromLine,
-  Receipt, LogOut, Shield, Menu, X, RefreshCw, Settings, MessageCircle, Megaphone,
+  Receipt, LogOut, Shield, Menu, X, RefreshCw, Settings, MessageCircle, Megaphone, Mail,
 } from 'lucide-react';
 import { Logo } from './Logo';
 
