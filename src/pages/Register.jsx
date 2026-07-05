@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { UserPlus, User, Lock, Gift } from 'lucide-react';
+import { UserPlus, User, Lock, Gift, Mail } from 'lucide-react';
 import AuthLayout from '../components/AuthLayout';
 import { AuthCard, AuthInput, AuthError, AuthSubmitButton } from '../components/AuthForm';
 import { useAuth } from '../context/AuthContext';
@@ -11,6 +11,7 @@ export default function Register() {
   const refFromUrl = searchParams.get('ref') || searchParams.get('referral_code') || '';
   const [form, setForm] = useState({
     username: '',
+    email: '',
     password: '',
     referral_code: refFromUrl,
   });
@@ -45,7 +46,7 @@ export default function Register() {
     <AuthLayout variant="orange">
       <AuthCard
         title="Create Account"
-        subtitle="Username and password only"
+        subtitle="Enter your username, email and password"
         icon={UserPlus}
         variant="orange"
       >
@@ -60,6 +61,17 @@ export default function Register() {
             autoComplete="username"
             required
             icon={User}
+          />
+
+          <AuthInput
+            label="Email"
+            type="email"
+            value={form.email}
+            onChange={update('email')}
+            placeholder="Enter your email"
+            autoComplete="email"
+            required
+            icon={Mail}
           />
 
           <AuthInput
