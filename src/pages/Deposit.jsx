@@ -59,6 +59,10 @@ export default function Deposit() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!screenshot) {
+      setError('Please upload your payment screenshot before submitting.');
+      return;
+    }
     setLoading(true);
     setSuccess('');
     setError('');
@@ -66,8 +70,8 @@ export default function Deposit() {
       const formData = new FormData();
       formData.append('amount', parseFloat(amount));
       formData.append('network', network);
+      formData.append('screenshot', screenshot);
       if (note) formData.append('note', note);
-      if (screenshot) formData.append('screenshot', screenshot);
       await userAPI.createDeposit(formData);
       setSuccess('Deposit request submitted successfully!');
       setAmount('');
@@ -77,7 +81,11 @@ export default function Deposit() {
       await loadDeposits();
       await refreshUser();
     } catch (err) {
-      const msg = err.response?.data?.error || err.response?.data?.amount?.[0] || 'Deposit failed';
+      const data = err.response?.data;
+      const msg = data?.error
+        || data?.screenshot?.[0]
+        || data?.amount?.[0]
+        || 'Deposit failed';
       setError(Array.isArray(msg) ? msg[0] : msg);
     } finally {
       setLoading(false);
@@ -157,14 +165,18 @@ export default function Deposit() {
             </div>
 
             <div>
-              <label className="mb-1 block text-xs text-gray-400">Payment Screenshot</label>
-              <label className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border border-dashed border-cs-border bg-cs-dark/60 p-4 hover:border-cs-purple/50">
+              <label className="mb-1 block text-xs text-gray-400">
+                Payment Screenshot <span className="text-cs-red">*</span>
+              </label>
+              <label className={`flex cursor-pointer flex-col items-center gap-2 rounded-xl border border-dashed bg-cs-dark/60 p-4 hover:border-cs-purple/50 ${
+                screenshot ? 'border-cs-green/40' : 'border-cs-border'
+              }`}>
                 {preview ? (
                   <img src={preview} alt="Screenshot" className="max-h-40 rounded-lg object-contain" />
                 ) : (
                   <>
                     <Upload size={24} className="text-gray-500" />
-                    <span className="text-xs text-gray-500">Upload transaction screenshot</span>
+                    <span className="text-xs text-gray-500">Required — upload transaction screenshot</span>
                   </>
                 )}
                 <input type="file" accept="image/*" onChange={handleFile} className="hidden" />
@@ -181,13 +193,17 @@ export default function Deposit() {
                 placeholder="Transaction hash / reference..."
               />
             </div>
-            <button type="submit" disabled={loading} className="gradient-btn w-full rounded-xl py-3 font-bold text-white disabled:opacity-50">
+            <button
+              type="submit"
+              disabled={loading || !screenshot || !amount}
+              className="gradient-btn w-full rounded-xl py-3 font-bold text-white disabled:opacity-50"
+            >
               {loading ? 'Submitting...' : 'Submit Deposit Request'}
             </button>
           </form>
 
           <p className="mt-4 text-center text-[10px] text-gray-600">
-            Send USDT to the address above, upload screenshot, then submit. Reviewed within 24 hours.
+            Send USDT to the address above, upload screenshot (required), then submit. Reviewed within 24 hours.
           </p>
         </div>
 

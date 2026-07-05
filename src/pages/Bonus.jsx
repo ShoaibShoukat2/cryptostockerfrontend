@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Gift, Users, CheckCircle, Copy, Share2 } from 'lucide-react';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
-import PromotionBonusBox from '../components/PromotionBonusBox';
 import { useAuth } from '../context/AuthContext';
 import { userAPI } from '../api';
 
@@ -36,9 +35,11 @@ export default function Bonus() {
     copyCode();
   };
 
-  const count = bonus?.referrals_today ?? 0;
+  const count = bonus?.qualified_referrals ?? bonus?.referrals_today ?? 0;
   const required = bonus?.required ?? 3;
   const amount = bonus?.bonus_amount ?? 15;
+  const minDeposit = bonus?.min_deposit_required ?? 100;
+  const awarded = bonus?.awarded_lifetime ?? bonus?.awarded_today ?? false;
   const progress = Math.min(100, (count / required) * 100);
 
   return (
@@ -51,8 +52,10 @@ export default function Bonus() {
               <Gift size={28} className="text-cs-gold" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Extra Daily Bonus</h1>
-              <p className="text-sm text-gray-400">Refer {required} members in one day</p>
+              <h1 className="text-xl font-bold">Extra Bonus</h1>
+              <p className="text-sm text-gray-400">
+                {required} referrals with ${minDeposit} deposit each
+              </p>
             </div>
           </div>
 
@@ -62,7 +65,7 @@ export default function Bonus() {
           </div>
 
           <div className="mb-2 flex justify-between text-xs">
-            <span className="text-gray-400">Today&apos;s Referrals</span>
+            <span className="text-gray-400">Qualifying Referrals</span>
             <span className="font-bold text-white">{count} / {required}</span>
           </div>
           <div className="mb-6 h-3 overflow-hidden rounded-full bg-cs-dark">
@@ -95,10 +98,10 @@ export default function Bonus() {
             </div>
           </div>
 
-          {bonus?.awarded_today ? (
+          {awarded ? (
             <div className="flex items-center gap-2 rounded-xl border border-cs-green/30 bg-cs-green/10 p-4 text-cs-green">
               <CheckCircle size={20} />
-              <span className="text-sm font-semibold">Bonus awarded today! Come back tomorrow.</span>
+              <span className="text-sm font-semibold">Lifetime bonus already claimed!</span>
             </div>
           ) : (
             <div className="rounded-xl border border-cs-border/50 bg-cs-dark/60 p-4">
@@ -107,16 +110,12 @@ export default function Bonus() {
                 How to earn
               </div>
               <p className="text-xs leading-relaxed text-gray-400">
-                Invite {required} new members using your referral code in a single day.
-                When the {required}rd member registers, you automatically receive ${amount} bonus
-                added to your balance.
+                Invite {required} members using your referral code. Each member must deposit
+                at least ${minDeposit} (approved by admin) to count toward your bonus.
+                When all {required} qualify, you receive ${amount} once — lifetime limit.
               </p>
             </div>
           )}
-        </div>
-
-        <div className="card-dark glow-purple mb-4 overflow-hidden p-6">
-          <PromotionBonusBox compact className="!border-0 !bg-transparent !p-0 !shadow-none" />
         </div>
       </div>
       <BottomNav />

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Users, ArrowDownToLine, ArrowUpFromLine, DollarSign,
   CheckCircle, XCircle, Search, Bell, Edit3, Ban, Check,
-  Clock, TrendingUp, AlertCircle, MessageCircle, ExternalLink, Megaphone, Mail,
+  Clock, TrendingUp, AlertCircle, MessageCircle, ExternalLink, Megaphone, Mail, KeyRound,
 } from 'lucide-react';
 import { adminAPI } from '../api';
 import AdminLayout from '../components/AdminLayout';
@@ -202,19 +202,32 @@ export default function AdminDashboard() {
     promotion_tier3_detail: '',
     promotion_tier3_reward: '',
   });
+  const [adminAccounts, setAdminAccounts] = useState(null);
+  const [adminAccountSaving, setAdminAccountSaving] = useState(false);
+  const [adminCreateSaving, setAdminCreateSaving] = useState(false);
+  const [adminUpdateForm, setAdminUpdateForm] = useState({
+    admin_id: '',
+    username: '',
+    password: '',
+    confirm_password: '',
+  });
+  const [adminCreateForm, setAdminCreateForm] = useState({
+    username: '',
+    password: '',
+    confirm_password: '',
+  });
 
   const loadAll = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const [dashRes, depRes, witRes, userRes, txRes, cfgRes, contactRes] = await Promise.all([
+      const [dashRes, depRes, witRes, userRes, txRes, cfgRes] = await Promise.all([
         adminAPI.getDashboard(),
         adminAPI.getDeposits(),
         adminAPI.getWithdrawals(),
         adminAPI.getUsers(),
         adminAPI.getTransactions(),
         adminAPI.getConfig(),
-        adminAPI.getContactMessages(),
       ]);
       setStats(dashRes.data);
       setDeposits(depRes.data);
@@ -222,7 +235,6 @@ export default function AdminDashboard() {
       setUsers(userRes.data);
       setTransactions(txRes.data);
       setSiteConfig(cfgRes.data);
-      setContacts(contactRes.data);
       setSupportForm({
         support_heading: cfgRes.data.support_heading || 'Telegram Support',
         support_subtitle: cfgRes.data.support_subtitle || 'Our team is available 24/7 on Telegram',
@@ -238,6 +250,13 @@ export default function AdminDashboard() {
         promotion_tier3_detail: cfgRes.data.promotion_tier3_detail || '10k views on a video',
         promotion_tier3_reward: cfgRes.data.promotion_tier3_reward ?? '30',
       });
+
+      try {
+        const contactRes = await adminAPI.getContactMessages();
+        setContacts(contactRes.data);
+      } catch {
+        setContacts([]);
+      }
     } catch {
       setError('Failed to load admin data.');
     } finally {
@@ -246,6 +265,29 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => { loadAll(); }, [loadAll]);
+
+  const loadAdminAccounts = useCallback(async () => {
+    try {
+      const { data } = await adminAPI.getAdminAccount();
+      setAdminAccounts(data);
+      const current = data.admins?.find((a) => a.id === data.current_id) || data.admins?.[0];
+      setAdminUpdateForm((prev) => ({
+        ...prev,
+        admin_id: current ? String(current.id) : '',
+        username: current?.username || '',
+        password: '',
+        confirm_password: '',
+      }));
+    } catch {
+      setAdminAccounts(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (tab === 'admin-account') {
+      loadAdminAccounts();
+    }
+  }, [tab, loadAdminAccounts]);
 
   const runAction = async (action, id) => {
     setActionLoading(id);
@@ -260,6 +302,64 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = () => { logout(); navigate('/login'); };
+
+  const saveAdminAccount = async () => {
+    if (!adminUpdateForm.username.trim()) {
+      alert('Username is required.');
+      return;
+    }
+    if (adminUpdateForm.password || adminUpdateForm.confirm_password) {
+      if (adminUpdateForm.password !== adminUpdateForm.confirm_password) {
+        alert('Passwords do not match.');
+        return;
+      }
+    }
+    setAdminAccountSaving(true);
+    try {
+      const payload = {
+        admin_id: Number(adminUpdateForm.admin_id),
+        username: adminUpdateForm.username.trim(),
+      };
+      if (adminUpdateForm.password) {
+        payload.password = adminUpdateForm.password;
+        payload.confirm_password = adminUpdateForm.confirm_password;
+      }
+      const { data } = await adminAPI.updateAdminAccount(payload);
+      alert(data.message || 'Admin account updated.');
+      setAdminUpdateForm((prev) => ({ ...prev, password: '', confirm_password: '' }));
+      await loadAdminAccounts();
+    } catch (err) {
+      alert(err.response?.data?.error || err.response?.data?.password?.[0] || 'Failed to update admin account');
+    } finally {
+      setAdminAccountSaving(false);
+    }
+  };
+
+  const createAdminAccount = async () => {
+    if (!adminCreateForm.username.trim() || !adminCreateForm.password) {
+      alert('Username and password are required.');
+      return;
+    }
+    if (adminCreateForm.password !== adminCreateForm.confirm_password) {
+      alert('Passwords do not match.');
+      return;
+    }
+    setAdminCreateSaving(true);
+    try {
+      const { data } = await adminAPI.createAdminAccount({
+        username: adminCreateForm.username.trim(),
+        password: adminCreateForm.password,
+        confirm_password: adminCreateForm.confirm_password,
+      });
+      alert(data.message || 'Admin account created.');
+      setAdminCreateForm({ username: '', password: '', confirm_password: '' });
+      await loadAdminAccounts();
+    } catch (err) {
+      alert(err.response?.data?.error || err.response?.data?.username?.[0] || 'Failed to create admin account');
+    } finally {
+      setAdminCreateSaving(false);
+    }
+  };
 
   const saveSupportSettings = async () => {
     setSupportSaving(true);
@@ -846,6 +946,132 @@ export default function AdminDashboard() {
         </div>
       )}
 
+      {/* ADMIN ACCOUNT */}
+      {tab === 'admin-account' && (
+        <div className="grid max-w-4xl gap-6 lg:grid-cols-2">
+          <div className="card-dark p-6">
+            <div className="mb-4 flex items-center gap-2">
+              <KeyRound size={20} className="text-cs-purple" />
+              <h2 className="text-lg font-bold">Update Admin Login</h2>
+            </div>
+            <p className="mb-6 text-xs text-gray-500">
+              Change admin username and/or password. Leave password blank to keep the current password.
+            </p>
+            <div className="space-y-4">
+              {adminAccounts?.admins?.length > 1 && (
+                <div>
+                  <label className="mb-1 block text-xs text-gray-400">Admin Account</label>
+                  <select
+                    value={adminUpdateForm.admin_id}
+                    onChange={(e) => {
+                      const selected = adminAccounts.admins.find((a) => String(a.id) === e.target.value);
+                      setAdminUpdateForm((prev) => ({
+                        ...prev,
+                        admin_id: e.target.value,
+                        username: selected?.username || '',
+                        password: '',
+                        confirm_password: '',
+                      }));
+                    }}
+                    className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm"
+                  >
+                    {adminAccounts.admins.map((admin) => (
+                      <option key={admin.id} value={admin.id}>
+                        {admin.username}{admin.id === adminAccounts.current_id ? ' (you)' : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <div>
+                <label className="mb-1 block text-xs text-gray-400">Username</label>
+                <input
+                  type="text"
+                  value={adminUpdateForm.username}
+                  onChange={(e) => setAdminUpdateForm({ ...adminUpdateForm, username: e.target.value })}
+                  className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-gray-400">New Password</label>
+                <input
+                  type="password"
+                  value={adminUpdateForm.password}
+                  onChange={(e) => setAdminUpdateForm({ ...adminUpdateForm, password: e.target.value })}
+                  placeholder="Leave blank to keep current"
+                  className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-gray-400">Confirm Password</label>
+                <input
+                  type="password"
+                  value={adminUpdateForm.confirm_password}
+                  onChange={(e) => setAdminUpdateForm({ ...adminUpdateForm, confirm_password: e.target.value })}
+                  placeholder="Confirm new password"
+                  className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+                />
+              </div>
+              <button
+                type="button"
+                disabled={adminAccountSaving}
+                onClick={saveAdminAccount}
+                className="gradient-btn rounded-xl px-6 py-2.5 text-sm font-bold text-white disabled:opacity-50"
+              >
+                {adminAccountSaving ? 'Saving...' : 'Update Admin Account'}
+              </button>
+            </div>
+          </div>
+
+          <div className="card-dark p-6">
+            <div className="mb-4 flex items-center gap-2">
+              <KeyRound size={20} className="text-cs-gold" />
+              <h2 className="text-lg font-bold">Create New Admin</h2>
+            </div>
+            <p className="mb-6 text-xs text-gray-500">
+              Add another admin account with its own username and password.
+            </p>
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1 block text-xs text-gray-400">Username</label>
+                <input
+                  type="text"
+                  value={adminCreateForm.username}
+                  onChange={(e) => setAdminCreateForm({ ...adminCreateForm, username: e.target.value })}
+                  className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-gray-400">Password</label>
+                <input
+                  type="password"
+                  value={adminCreateForm.password}
+                  onChange={(e) => setAdminCreateForm({ ...adminCreateForm, password: e.target.value })}
+                  className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-gray-400">Confirm Password</label>
+                <input
+                  type="password"
+                  value={adminCreateForm.confirm_password}
+                  onChange={(e) => setAdminCreateForm({ ...adminCreateForm, confirm_password: e.target.value })}
+                  className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+                />
+              </div>
+              <button
+                type="button"
+                disabled={adminCreateSaving}
+                onClick={createAdminAccount}
+                className="rounded-xl border border-cs-gold/40 bg-cs-gold/10 px-6 py-2.5 text-sm font-bold text-cs-gold hover:bg-cs-gold/20 disabled:opacity-50"
+              >
+                {adminCreateSaving ? 'Creating...' : 'Create Admin Account'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* SETTINGS */}
       {tab === 'settings' && siteConfig && (
         <div className="card-dark max-w-2xl p-6">
@@ -858,8 +1084,8 @@ export default function AdminDashboard() {
               { key: 'min_deposit', label: 'Minimum Deposit ($)', type: 'number' },
               { key: 'min_withdraw', label: 'Minimum Withdraw ($)', type: 'number' },
               { key: 'referral_commission_rate', label: 'Referral Commission (0.12 = 12%)', type: 'number', step: '0.01' },
-              { key: 'daily_bonus_amount', label: 'Daily Bonus Amount ($)', type: 'number' },
-              { key: 'daily_bonus_referrals', label: 'Referrals needed for daily bonus', type: 'number' },
+              { key: 'daily_bonus_amount', label: 'Extra Bonus Amount ($)', type: 'number' },
+              { key: 'daily_bonus_referrals', label: 'Depositing referrals needed for extra bonus', type: 'number' },
               { key: 'investment_lock_days', label: 'Investment Lock (days)', type: 'number' },
             ].map(({ key, label, type = 'text', step }) => (
               <div key={key}>

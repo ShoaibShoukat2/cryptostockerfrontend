@@ -43,6 +43,9 @@ export const adminAPI = {
   rejectWithdrawal: (id) => API.post(`/admin/withdrawals/${id}/reject/`),
   getContactMessages: () => API.get('/admin/contact-messages/'),
   markContactRead: (id) => API.post(`/admin/contact-messages/${id}/read/`),
+  getAdminAccount: () => API.get('/admin/account/'),
+  createAdminAccount: (data) => API.post('/admin/account/', data),
+  updateAdminAccount: (data) => API.patch('/admin/account/', data),
 };
 
 export default API;

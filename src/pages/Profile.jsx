@@ -75,6 +75,7 @@ export default function Profile() {
             { label: 'Help & Support', path: '/help' },
             { label: 'Contact Us', path: '/contact' },
             { label: 'Extra Bonus', path: '/bonus' },
+            { label: 'Promotion Bonus', path: '/promotion' },
             { label: 'My Team', path: '/team' },
           ].map(({ label, path }) => (
             <button

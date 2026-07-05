@@ -4,9 +4,10 @@ import { Gift } from 'lucide-react';
 
 export default function ExtraBonusFab({ dailyBonus }) {
   const navigate = useNavigate();
-  const count = dailyBonus?.referrals_today ?? 0;
+  const count = dailyBonus?.qualified_referrals ?? dailyBonus?.referrals_today ?? 0;
   const required = dailyBonus?.required ?? 3;
   const remaining = dailyBonus?.remaining ?? required;
+  const awarded = dailyBonus?.awarded_lifetime ?? dailyBonus?.awarded_today ?? false;
 
   return (
     <motion.button
@@ -21,12 +22,12 @@ export default function ExtraBonusFab({ dailyBonus }) {
     >
       <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl border border-cs-gold/40 bg-gradient-to-br from-cs-gold/30 to-cs-orange/20 shadow-[0_0_20px_rgba(245,158,11,0.35)]">
         <Gift size={24} className="text-cs-gold" />
-        {!dailyBonus?.awarded_today && remaining > 0 && (
+        {!awarded && remaining > 0 && (
           <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-cs-red text-[9px] font-bold text-white">
             {remaining}
           </span>
         )}
-        {dailyBonus?.awarded_today && (
+        {awarded && (
           <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-cs-green text-[8px] font-bold text-white">
             ✓
           </span>

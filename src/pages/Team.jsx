@@ -5,7 +5,6 @@ import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import { useAuth } from '../context/AuthContext';
 import { referralIconPng } from '../components/DashboardIcons';
-import PromotionBonusBox from '../components/PromotionBonusBox';
 import { getReferralLink, getReferralShareText } from '../lib/referral';
 
 export default function Team() {
@@ -91,11 +90,11 @@ export default function Team() {
           <div className="mb-4 grid grid-cols-3 gap-3">
             <div className="rounded-xl border border-cs-border bg-cs-dark p-3 text-center">
               <p className="text-xl font-bold text-cs-purple">{user?.total_referrals || 0}</p>
-              <p className="text-[10px] text-gray-500">Direct</p>
+              <p className="text-[10px] text-gray-500">Direct (deposited)</p>
             </div>
             <div className="rounded-xl border border-cs-border bg-cs-dark p-3 text-center">
               <p className="text-xl font-bold text-cs-green">{data?.referral_levels?.[0]?.indirect_members ?? 0}</p>
-              <p className="text-[10px] text-gray-500">Indirect</p>
+              <p className="text-[10px] text-gray-500">Indirect (deposited)</p>
             </div>
             <div className="rounded-xl border border-cs-border bg-cs-dark p-3 text-center">
               <p className="text-xl font-bold text-cs-gold">${parseFloat(user?.total_referral_bonus || 0).toFixed(0)}</p>
@@ -113,7 +112,7 @@ export default function Team() {
                   12% Commission on Every Deposit
                 </p>
                 <p className="mt-1 text-[11px] leading-relaxed text-gray-400">
-                  Earn instantly when your direct referral makes a deposit.
+                  Earn instantly when your direct referral makes a deposit. Team members count only after their deposit is approved.
                 </p>
                 <p className="mt-1.5 text-[10px] text-gray-500">
                   Example:{' '}
@@ -125,8 +124,6 @@ export default function Team() {
               </div>
             </div>
           </div>
-
-          <PromotionBonusBox compact className="mb-4" />
 
           <h3 className="mb-3 text-sm font-semibold">Referral Tier Levels</h3>
           <p className="mb-4 text-[10px] text-gray-500">

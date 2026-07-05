@@ -51,24 +51,24 @@ export default function PromotionBonusBox({ compact = false, className = '' }) {
   const tiers = buildTiers(config);
 
   return (
-    <div className={`overflow-hidden rounded-xl border border-cs-purple/30 bg-gradient-to-r from-cs-purple/10 via-cs-dark/80 to-cs-gold/10 p-4 shadow-[0_0_18px_rgba(139,92,246,0.18)] ${compact ? '' : 'mb-4'} ${className}`}>
-      <div className={`flex items-center gap-3 ${compact ? 'mb-3' : 'mb-5'}`}>
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cs-purple/20">
-          <Megaphone size={20} className="text-cs-purple" />
+    <div className={`overflow-hidden rounded-xl border border-cs-purple/30 bg-gradient-to-r from-cs-purple/10 via-cs-dark/80 to-cs-gold/10 p-5 shadow-[0_0_18px_rgba(139,92,246,0.18)] ${compact ? '' : 'mb-4'} ${className}`}>
+      <div className={`flex items-center gap-3 ${compact ? 'mb-3' : 'mb-6'}`}>
+        <div className={`flex shrink-0 items-center justify-center rounded-xl bg-cs-purple/20 ${compact ? 'h-10 w-10' : 'h-14 w-14'}`}>
+          <Megaphone size={compact ? 20 : 28} className="text-cs-purple" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-white">Promotion Bonus</h3>
-          <p className="text-[11px] text-gray-400">{config.promotion_bonus_subtitle}</p>
+          <h1 className={`font-bold text-white ${compact ? 'text-sm' : 'text-xl'}`}>Promotion Bonus</h1>
+          <p className={`text-gray-400 ${compact ? 'text-[11px]' : 'text-sm'}`}>{config.promotion_bonus_subtitle}</p>
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className={`space-y-2 ${compact ? '' : 'space-y-3'}`}>
         {tiers.map((item, index) => {
           const style = TIER_STYLES[index] || TIER_STYLES[0];
           return (
             <div
               key={`${item.detail}-${index}`}
-              className={`flex items-start gap-3 rounded-xl border p-3 ${style.accent}`}
+              className={`flex items-start gap-3 rounded-xl border p-3 ${compact ? '' : 'p-4'} ${style.accent}`}
             >
               <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${style.iconBg}`}>
                 <Video size={16} className={style.iconColor} />
@@ -85,7 +85,7 @@ export default function PromotionBonusBox({ compact = false, className = '' }) {
       </div>
 
       {config.promotion_bonus_note && (
-        <p className="mt-3 text-center text-[10px] text-gray-500">
+        <p className={`mt-3 text-center text-gray-500 ${compact ? 'text-[10px]' : 'text-xs'}`}>
           {config.promotion_bonus_note}
         </p>
       )}
