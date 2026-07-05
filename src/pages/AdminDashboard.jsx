@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import {
   Users, ArrowDownToLine, ArrowUpFromLine, DollarSign,
   CheckCircle, XCircle, Search, Bell, Edit3, Ban, Check,
-  Clock, TrendingUp, AlertCircle, MessageCircle, ExternalLink,
+  Clock, TrendingUp, AlertCircle, MessageCircle, ExternalLink, Megaphone, Mail,
 } from 'lucide-react';
 import { adminAPI } from '../api';
 import AdminLayout from '../components/AdminLayout';
 import { useAuth } from '../context/AuthContext';
+import { formatSupportLinkLabel, normalizeSupportLink } from '../lib/support';
 
 const statusStyle = {
   pending: 'bg-yellow-500/20 text-yellow-400',
@@ -175,6 +176,7 @@ export default function AdminDashboard() {
   const [deposits, setDeposits] = useState([]);
   const [withdrawals, setWithdrawals] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState(null);
@@ -183,20 +185,36 @@ export default function AdminDashboard() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [siteConfig, setSiteConfig] = useState(null);
   const [configSaving, setConfigSaving] = useState(false);
-  const [telegramSaving, setTelegramSaving] = useState(false);
-  const [telegramLink, setTelegramLink] = useState('');
+  const [supportSaving, setSupportSaving] = useState(false);
+  const [supportForm, setSupportForm] = useState({
+    support_heading: '',
+    support_subtitle: '',
+    telegram_link: '',
+  });
+  const [promotionSaving, setPromotionSaving] = useState(false);
+  const [promotionForm, setPromotionForm] = useState({
+    promotion_bonus_subtitle: '',
+    promotion_bonus_note: '',
+    promotion_tier1_detail: '',
+    promotion_tier1_reward: '',
+    promotion_tier2_detail: '',
+    promotion_tier2_reward: '',
+    promotion_tier3_detail: '',
+    promotion_tier3_reward: '',
+  });
 
   const loadAll = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const [dashRes, depRes, witRes, userRes, txRes, cfgRes] = await Promise.all([
+      const [dashRes, depRes, witRes, userRes, txRes, cfgRes, contactRes] = await Promise.all([
         adminAPI.getDashboard(),
         adminAPI.getDeposits(),
         adminAPI.getWithdrawals(),
         adminAPI.getUsers(),
         adminAPI.getTransactions(),
         adminAPI.getConfig(),
+        adminAPI.getContactMessages(),
       ]);
       setStats(dashRes.data);
       setDeposits(depRes.data);
@@ -204,7 +222,22 @@ export default function AdminDashboard() {
       setUsers(userRes.data);
       setTransactions(txRes.data);
       setSiteConfig(cfgRes.data);
-      setTelegramLink(cfgRes.data.telegram_link || '');
+      setContacts(contactRes.data);
+      setSupportForm({
+        support_heading: cfgRes.data.support_heading || 'Telegram Support',
+        support_subtitle: cfgRes.data.support_subtitle || 'Our team is available 24/7 on Telegram',
+        telegram_link: cfgRes.data.telegram_link || '',
+      });
+      setPromotionForm({
+        promotion_bonus_subtitle: cfgRes.data.promotion_bonus_subtitle || 'Upload videos and earn extra rewards',
+        promotion_bonus_note: cfgRes.data.promotion_bonus_note || 'Contact support on Telegram to claim your promotion bonus rewards.',
+        promotion_tier1_detail: cfgRes.data.promotion_tier1_detail || 'Upload 1 video daily for 7 days',
+        promotion_tier1_reward: cfgRes.data.promotion_tier1_reward ?? '5',
+        promotion_tier2_detail: cfgRes.data.promotion_tier2_detail || '5k views on a video',
+        promotion_tier2_reward: cfgRes.data.promotion_tier2_reward ?? '10',
+        promotion_tier3_detail: cfgRes.data.promotion_tier3_detail || '10k views on a video',
+        promotion_tier3_reward: cfgRes.data.promotion_tier3_reward ?? '30',
+      });
     } catch {
       setError('Failed to load admin data.');
     } finally {
@@ -228,27 +261,63 @@ export default function AdminDashboard() {
 
   const handleLogout = () => { logout(); navigate('/login'); };
 
-  const normalizeTelegramLink = (value) => {
-    const trimmed = value.trim();
-    if (!trimmed) return '';
-    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
-    if (trimmed.startsWith('t.me/')) return `https://${trimmed}`;
-    if (trimmed.startsWith('@')) return `https://t.me/${trimmed.slice(1)}`;
-    return `https://t.me/${trimmed}`;
+  const saveSupportSettings = async () => {
+    setSupportSaving(true);
+    try {
+      const link = normalizeSupportLink(supportForm.telegram_link);
+      const { data } = await adminAPI.updateConfig({
+        support_heading: supportForm.support_heading.trim(),
+        support_subtitle: supportForm.support_subtitle.trim(),
+        telegram_link: link,
+      });
+      setSiteConfig(data);
+      setSupportForm({
+        support_heading: data.support_heading || '',
+        support_subtitle: data.support_subtitle || '',
+        telegram_link: data.telegram_link || link,
+      });
+      alert('Support settings updated!');
+    } catch {
+      alert('Failed to update support settings');
+    } finally {
+      setSupportSaving(false);
+    }
   };
 
-  const saveTelegramLink = async () => {
-    setTelegramSaving(true);
+  const updateSupportField = (key, value) => {
+    setSupportForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const updatePromotionField = (key, value) => {
+    setPromotionForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const savePromotionBonus = async () => {
+    setPromotionSaving(true);
     try {
-      const link = normalizeTelegramLink(telegramLink);
-      const { data } = await adminAPI.updateConfig({ telegram_link: link });
+      const payload = {
+        ...promotionForm,
+        promotion_tier1_reward: parseFloat(promotionForm.promotion_tier1_reward || 0),
+        promotion_tier2_reward: parseFloat(promotionForm.promotion_tier2_reward || 0),
+        promotion_tier3_reward: parseFloat(promotionForm.promotion_tier3_reward || 0),
+      };
+      const { data } = await adminAPI.updateConfig(payload);
       setSiteConfig(data);
-      setTelegramLink(data.telegram_link || link);
-      alert('Telegram link updated!');
+      setPromotionForm({
+        promotion_bonus_subtitle: data.promotion_bonus_subtitle || '',
+        promotion_bonus_note: data.promotion_bonus_note || '',
+        promotion_tier1_detail: data.promotion_tier1_detail || '',
+        promotion_tier1_reward: data.promotion_tier1_reward ?? '',
+        promotion_tier2_detail: data.promotion_tier2_detail || '',
+        promotion_tier2_reward: data.promotion_tier2_reward ?? '',
+        promotion_tier3_detail: data.promotion_tier3_detail || '',
+        promotion_tier3_reward: data.promotion_tier3_reward ?? '',
+      });
+      alert('Promotion bonus updated!');
     } catch {
-      alert('Failed to update Telegram link');
+      alert('Failed to update promotion bonus');
     } finally {
-      setTelegramSaving(false);
+      setPromotionSaving(false);
     }
   };
 
@@ -264,6 +333,10 @@ export default function AdminDashboard() {
   const filteredDeposits = useMemo(() => filterByStatus(filterBySearch(deposits, ['username', 'transaction_id'])), [deposits, search, statusFilter]);
   const filteredWithdrawals = useMemo(() => filterByStatus(filterBySearch(withdrawals, ['username', 'wallet_address'])), [withdrawals, search, statusFilter]);
   const filteredTx = useMemo(() => filterBySearch(transactions, ['username', 'type', 'description']), [transactions, search]);
+  const filteredContacts = useMemo(
+    () => filterBySearch(contacts, ['username', 'email', 'subject', 'message']),
+    [contacts, search],
+  );
 
   if (loading && !stats) {
     return (
@@ -301,16 +374,37 @@ export default function AdminDashboard() {
             <StatCard icon={Clock} label="Pending Withdrawals" value={stats?.pending_withdrawals} color="text-cs-red" glow="glow-red" />
           </div>
 
-          {(stats?.pending_deposits > 0 || stats?.pending_withdrawals > 0) && (
+          {(stats?.pending_deposits > 0 || stats?.pending_withdrawals > 0 || stats?.unread_contacts > 0) && (
             <div className="card-dark glow-gold flex flex-wrap items-center gap-4 p-4">
               <AlertCircle className="text-cs-gold" size={20} />
               <p className="text-sm">
-                <span className="font-bold text-cs-gold">{stats.pending_deposits}</span> pending deposits
-                (${(stats.pending_deposit_amount || 0).toFixed(2)}) &nbsp;|&nbsp;
-                <span className="font-bold text-cs-gold">{stats.pending_withdrawals}</span> pending withdrawals
-                (${(stats.pending_withdrawal_amount || 0).toFixed(2)})
+                {stats.pending_deposits > 0 && (
+                  <>
+                    <span className="font-bold text-cs-gold">{stats.pending_deposits}</span> pending deposits
+                    (${(stats.pending_deposit_amount || 0).toFixed(2)})
+                  </>
+                )}
+                {stats.pending_deposits > 0 && stats.pending_withdrawals > 0 && ' | '}
+                {stats.pending_withdrawals > 0 && (
+                  <>
+                    <span className="font-bold text-cs-gold">{stats.pending_withdrawals}</span> pending withdrawals
+                    (${(stats.pending_withdrawal_amount || 0).toFixed(2)})
+                  </>
+                )}
+                {(stats.pending_deposits > 0 || stats.pending_withdrawals > 0) && stats.unread_contacts > 0 && ' | '}
+                {stats.unread_contacts > 0 && (
+                  <>
+                    <span className="font-bold text-cs-gold">{stats.unread_contacts}</span> new contact message(s)
+                  </>
+                )}
               </p>
-              <button type="button" onClick={() => setTab('deposits')} className="ml-auto text-xs text-cs-purple hover:underline">Review →</button>
+              <button
+                type="button"
+                onClick={() => setTab(stats?.unread_contacts > 0 ? 'contact' : 'deposits')}
+                className="ml-auto text-xs text-cs-purple hover:underline"
+              >
+                Review →
+              </button>
             </div>
           )}
 
@@ -525,52 +619,229 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* TELEGRAM */}
-      {tab === 'telegram' && (
+      {/* CONTACT MESSAGES */}
+      {tab === 'contact' && (
+        <div className="card-dark p-4">
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <div className="relative flex-1">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search messages..."
+                className="w-full rounded-xl border border-cs-border bg-cs-dark py-2 pl-9 pr-3 text-sm"
+              />
+            </div>
+            <span className="text-xs text-gray-500">
+              {filteredContacts.length} message(s)
+              {stats?.unread_contacts > 0 && (
+                <span className="ml-2 rounded-full bg-yellow-500/20 px-2 py-0.5 text-yellow-400">
+                  {stats.unread_contacts} unread
+                </span>
+              )}
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {filteredContacts.map((msg) => (
+              <div
+                key={msg.id}
+                className={`rounded-xl border p-4 ${
+                  msg.is_read
+                    ? 'border-cs-border/50 bg-cs-dark/40'
+                    : 'border-cs-purple/40 bg-cs-purple/10'
+                }`}
+              >
+                <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <p className="font-bold text-white">@{msg.username}</p>
+                    <p className="text-xs text-gray-500">{msg.email || 'No email'}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                      msg.is_read ? 'bg-cs-green/20 text-cs-green' : 'bg-yellow-500/20 text-yellow-400'
+                    }`}
+                    >
+                      {msg.is_read ? 'Read' : 'New'}
+                    </span>
+                    {!msg.is_read && (
+                      <button
+                        type="button"
+                        disabled={actionLoading === `contact-${msg.id}`}
+                        onClick={async () => {
+                          setActionLoading(`contact-${msg.id}`);
+                          try {
+                            await adminAPI.markContactRead(msg.id);
+                            await loadAll();
+                          } catch {
+                            alert('Failed to mark as read');
+                          } finally {
+                            setActionLoading(null);
+                          }
+                        }}
+                        className="rounded-lg bg-cs-purple/20 px-2 py-1 text-[10px] font-semibold text-cs-purple hover:bg-cs-purple/30 disabled:opacity-50"
+                      >
+                        Mark Read
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <p className="mb-1 text-sm font-semibold text-cs-gold">{msg.subject}</p>
+                <p className="mb-2 whitespace-pre-wrap text-sm leading-relaxed text-gray-300">{msg.message}</p>
+                <p className="text-[10px] text-gray-500">{new Date(msg.created_at).toLocaleString()}</p>
+              </div>
+            ))}
+          </div>
+          {filteredContacts.length === 0 && (
+            <p className="py-8 text-center text-gray-500">No contact messages found</p>
+          )}
+        </div>
+      )}
+
+      {/* SUPPORT LINK */}
+      {tab === 'support' && (
         <div className="card-dark max-w-xl p-6">
           <div className="mb-6 flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cs-purple/20">
               <MessageCircle size={24} className="text-cs-purple" />
             </div>
             <div>
-              <h2 className="text-lg font-bold">Telegram Support Link</h2>
-              <p className="text-xs text-gray-500">Users will see this on Help & Support page</p>
+              <h2 className="text-lg font-bold">Support Link Settings</h2>
+              <p className="text-xs text-gray-500">Telegram or WhatsApp — shown on Help & Support page</p>
             </div>
           </div>
 
           <div className="mb-4">
-            <label className="mb-1 block text-xs text-gray-400">Telegram Link or Username</label>
+            <label className="mb-1 block text-xs text-gray-400">Heading</label>
             <input
               type="text"
-              value={telegramLink}
-              onChange={(e) => setTelegramLink(e.target.value)}
-              placeholder="https://t.me/yourgroup or @yourgroup"
+              value={supportForm.support_heading}
+              onChange={(e) => updateSupportField('support_heading', e.target.value)}
+              placeholder="e.g. WhatsApp Support, Telegram Support"
+              className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="mb-1 block text-xs text-gray-400">Subtitle (page text above button)</label>
+            <input
+              type="text"
+              value={supportForm.support_subtitle}
+              onChange={(e) => updateSupportField('support_subtitle', e.target.value)}
+              placeholder="e.g. Our team is available 24/7 on WhatsApp"
+              className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="mb-1 block text-xs text-gray-400">Support Link (Telegram or WhatsApp)</label>
+            <input
+              type="text"
+              value={supportForm.telegram_link}
+              onChange={(e) => updateSupportField('telegram_link', e.target.value)}
+              placeholder="https://t.me/group, @username, https://wa.me/923001234567"
               className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
             />
             <p className="mt-2 text-[10px] text-gray-500">
-              Examples: https://t.me/cryptostacker, @cryptostacker, cryptostacker
+              Telegram: https://t.me/name, @name — WhatsApp: https://wa.me/923001234567 or phone number
             </p>
           </div>
 
-          {telegramLink && (
-            <a
-              href={normalizeTelegramLink(telegramLink)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mb-4 flex items-center gap-2 rounded-xl border border-cs-purple/30 bg-cs-purple/10 px-4 py-3 text-sm text-cs-purple hover:bg-cs-purple/20"
-            >
-              <ExternalLink size={16} />
-              Preview: {normalizeTelegramLink(telegramLink)}
-            </a>
+          {supportForm.telegram_link && (
+            <div className="mb-4 rounded-xl border border-cs-border/50 bg-cs-dark/60 p-4">
+              <p className="mb-1 text-[10px] uppercase tracking-wide text-gray-500">Preview</p>
+              <p className="font-bold text-white">{supportForm.support_heading || 'Support'}</p>
+              <p className="text-xs text-cs-purple">{formatSupportLinkLabel(normalizeSupportLink(supportForm.telegram_link))}</p>
+              <a
+                href={normalizeSupportLink(supportForm.telegram_link)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center gap-1 text-xs text-cs-green hover:underline"
+              >
+                <ExternalLink size={12} /> Open link
+              </a>
+            </div>
           )}
 
           <button
             type="button"
-            disabled={telegramSaving || !telegramLink.trim()}
-            onClick={saveTelegramLink}
+            disabled={supportSaving || !supportForm.telegram_link.trim() || !supportForm.support_heading.trim()}
+            onClick={saveSupportSettings}
             className="gradient-btn rounded-xl px-6 py-2.5 text-sm font-bold text-white disabled:opacity-50"
           >
-            {telegramSaving ? 'Saving...' : 'Save Telegram Link'}
+            {supportSaving ? 'Saving...' : 'Save Support Settings'}
+          </button>
+        </div>
+      )}
+
+      {/* PROMOTION BONUS */}
+      {tab === 'promotion' && (
+        <div className="card-dark max-w-2xl p-6">
+          <div className="mb-6 flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cs-gold/20">
+              <Megaphone size={24} className="text-cs-gold" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold">Promotion Bonus</h2>
+              <p className="text-xs text-gray-500">Shown on My Team and Bonus pages</p>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="mb-1 block text-xs text-gray-400">Subtitle</label>
+            <input
+              type="text"
+              value={promotionForm.promotion_bonus_subtitle}
+              onChange={(e) => updatePromotionField('promotion_bonus_subtitle', e.target.value)}
+              className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+            />
+          </div>
+
+          {[1, 2, 3].map((tier) => (
+            <div key={tier} className="mb-4 rounded-xl border border-cs-border/50 bg-cs-dark/40 p-4">
+              <p className="mb-3 text-xs font-semibold text-cs-gold">Reward Tier {tier}</p>
+              <div className="grid gap-3 sm:grid-cols-[1fr_120px]">
+                <div>
+                  <label className="mb-1 block text-xs text-gray-400">Detail</label>
+                  <input
+                    type="text"
+                    value={promotionForm[`promotion_tier${tier}_detail`]}
+                    onChange={(e) => updatePromotionField(`promotion_tier${tier}_detail`, e.target.value)}
+                    className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs text-gray-400">Reward ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={promotionForm[`promotion_tier${tier}_reward`]}
+                    onChange={(e) => updatePromotionField(`promotion_tier${tier}_reward`, e.target.value)}
+                    className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+
+          <div className="mb-6">
+            <label className="mb-1 block text-xs text-gray-400">Footer Note</label>
+            <textarea
+              value={promotionForm.promotion_bonus_note}
+              onChange={(e) => updatePromotionField('promotion_bonus_note', e.target.value)}
+              rows={3}
+              className="w-full resize-none rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+            />
+          </div>
+
+          <button
+            type="button"
+            disabled={promotionSaving}
+            onClick={savePromotionBonus}
+            className="gradient-btn rounded-xl px-6 py-2.5 text-sm font-bold text-white disabled:opacity-50"
+          >
+            {promotionSaving ? 'Saving...' : 'Save Promotion Bonus'}
           </button>
         </div>
       )}
@@ -579,7 +850,7 @@ export default function AdminDashboard() {
       {tab === 'settings' && siteConfig && (
         <div className="card-dark max-w-2xl p-6">
           <h2 className="mb-4 text-lg font-bold">Platform Settings</h2>
-          <p className="mb-6 text-xs text-gray-500">Configure deposit addresses and business rules. Telegram link is managed in the Telegram tab.</p>
+          <p className="mb-6 text-xs text-gray-500">Configure deposit addresses and business rules. Support link is managed in the Support Link tab.</p>
           <div className="space-y-4">
             {[
               { key: 'bep20_address', label: 'BEP20 USDT Address' },

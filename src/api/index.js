@@ -22,6 +22,8 @@ export const userAPI = {
   getNotifications: () => API.get('/notifications/'),
   markNotificationRead: (id) => API.post(`/notifications/${id}/read/`),
   getMarket: (timeframe = '15m') => API.get('/market/', { params: { timeframe } }),
+  sendContactMessage: (data) => API.post('/contact/', data),
+  getContactMessages: () => API.get('/contact/list/'),
 };
 
 export const adminAPI = {
@@ -39,6 +41,8 @@ export const adminAPI = {
   rejectDeposit: (id) => API.post(`/admin/deposits/${id}/reject/`),
   approveWithdrawal: (id) => API.post(`/admin/withdrawals/${id}/approve/`),
   rejectWithdrawal: (id) => API.post(`/admin/withdrawals/${id}/reject/`),
+  getContactMessages: () => API.get('/admin/contact-messages/'),
+  markContactRead: (id) => API.post(`/admin/contact-messages/${id}/read/`),
 };
 
 export default API;

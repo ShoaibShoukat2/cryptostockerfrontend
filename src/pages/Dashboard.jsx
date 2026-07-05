@@ -499,12 +499,13 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Footer features */}
-        <div className="mb-4 grid grid-cols-4 gap-2">
+        <div className="mb-4 grid grid-cols-3 gap-2 sm:grid-cols-5">
           {[
             { Icon: SecureNeonIcon, label: 'Secure & Safe', sub: 'Bank-level security', path: '/about' },
             { Icon: ProfitsNeonIcon, label: 'Daily Profits', sub: data?.profit_percent || '1.4% daily', path: null },
             { Icon: InstantNeonIcon, label: 'Withdraw', sub: 'Profit anytime', path: '/withdraw' },
-            { Icon: SupportNeonIcon, label: '24/7 Support', sub: 'Telegram help', path: '/help' },
+            { Icon: SupportNeonIcon, label: 'Contact Us', sub: 'Send message', path: '/contact' },
+            { Icon: SupportNeonIcon, label: 'Help', sub: 'FAQ & support', path: '/help' },
           ].map(({ Icon, label, sub, path }, i) => (
             <motion.button
               key={label}

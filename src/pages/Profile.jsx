@@ -73,6 +73,7 @@ export default function Profile() {
           {[
             { label: 'About Us', path: '/about' },
             { label: 'Help & Support', path: '/help' },
+            { label: 'Contact Us', path: '/contact' },
             { label: 'Extra Bonus', path: '/bonus' },
             { label: 'My Team', path: '/team' },
           ].map(({ label, path }) => (

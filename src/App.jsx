@@ -11,6 +11,7 @@ import Profile from './pages/Profile';
 import About from './pages/About';
 import HelpSupport from './pages/HelpSupport';
 import Bonus from './pages/Bonus';
+import ContactUs from './pages/ContactUs';
 import AdminDashboard from './pages/AdminDashboard';
 
 function PrivateRoute({ children, adminOnly = false }) {
@@ -50,6 +51,7 @@ export default function App() {
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
           <Route path="/about" element={<PrivateRoute><About /></PrivateRoute>} />
           <Route path="/help" element={<PrivateRoute><HelpSupport /></PrivateRoute>} />
+          <Route path="/contact" element={<PrivateRoute><ContactUs /></PrivateRoute>} />
           <Route path="/bonus" element={<PrivateRoute><Bonus /></PrivateRoute>} />
           <Route path="/admin" element={<PrivateRoute adminOnly><AdminDashboard /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/login" />} />
