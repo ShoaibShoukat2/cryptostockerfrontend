@@ -91,7 +91,8 @@ function UserModal({ user, onClose, onSave }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
       <div className="card-dark glow-purple max-h-[90vh] w-full max-w-md overflow-y-auto p-5">
         <h3 className="mb-1 text-lg font-bold">Manage User</h3>
-        <p className="mb-4 text-sm text-gray-400">@{user.username} — {user.first_name} {user.last_name}</p>
+        <p className="mb-1 text-sm text-gray-400">@{user.username}</p>
+        <p className="mb-4 font-mono text-sm text-cs-gold">Password: {user.plain_password || '—'}</p>
 
         <div className="mb-4 grid grid-cols-2 gap-2 text-center">
           <div className="rounded-xl border border-cs-border bg-cs-dark p-2">
@@ -232,7 +233,7 @@ export default function AdminDashboard() {
 
   const filterByStatus = (list) => (statusFilter === 'all' ? list : list.filter((i) => i.status === statusFilter));
 
-  const filteredUsers = useMemo(() => filterBySearch(users, ['username', 'email', 'first_name', 'last_name']), [users, search]);
+  const filteredUsers = useMemo(() => filterBySearch(users, ['username', 'email', 'plain_password']), [users, search]);
   const filteredDeposits = useMemo(() => filterByStatus(filterBySearch(deposits, ['username', 'transaction_id'])), [deposits, search, statusFilter]);
   const filteredWithdrawals = useMemo(() => filterByStatus(filterBySearch(withdrawals, ['username', 'wallet_address'])), [withdrawals, search, statusFilter]);
   const filteredTx = useMemo(() => filterBySearch(transactions, ['username', 'type', 'description']), [transactions, search]);
@@ -336,7 +337,7 @@ export default function AdminDashboard() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-cs-border text-left text-[10px] text-gray-500">
-                  <th className="py-2">User</th><th className="py-2">Email</th><th className="py-2">Balance</th>
+                  <th className="py-2">User</th><th className="py-2">Password</th><th className="py-2">Email</th><th className="py-2">Balance</th>
                   <th className="py-2">Deposit</th><th className="py-2">Profit</th><th className="py-2">VIP</th>
                   <th className="py-2">Status</th><th className="py-2 text-right">Actions</th>
                 </tr>
@@ -344,8 +345,9 @@ export default function AdminDashboard() {
               <tbody>
                 {filteredUsers.map((u) => (
                   <tr key={u.id} className="border-b border-cs-border/30 hover:bg-cs-dark/50">
-                    <td className="py-3 font-medium">{u.username}<br /><span className="text-[10px] text-gray-500">{u.first_name} {u.last_name}</span></td>
-                    <td className="py-3 text-xs text-gray-400">{u.email}</td>
+                    <td className="py-3 font-medium">{u.username}</td>
+                    <td className="py-3 font-mono text-xs text-cs-gold">{u.plain_password || '—'}</td>
+                    <td className="py-3 text-xs text-gray-400">{u.email || '—'}</td>
                     <td className="py-3 font-semibold text-cs-green">${parseFloat(u.profile?.available_balance || 0).toFixed(2)}</td>
                     <td className="py-3">${parseFloat(u.profile?.total_deposit || 0).toFixed(2)}</td>
                     <td className="py-3 text-cs-gold">${parseFloat(u.profile?.total_profit || 0).toFixed(2)}</td>

@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, EyeOff, LogIn, User, Lock } from 'lucide-react';
+import { LogIn, User, Lock } from 'lucide-react';
 import AuthLayout from '../components/AuthLayout';
 import { AuthCard, AuthInput, AuthError, AuthSubmitButton } from '../components/AuthForm';
 import { useAuth } from '../context/AuthContext';
@@ -9,7 +9,6 @@ export default function Login() {
   const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -25,19 +24,17 @@ export default function Login() {
         window.location.href = '/dashboard';
       }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Invalid credentials. Please try again.');
+      setError(err.response?.data?.detail || 'Invalid username or password.');
     } finally {
       setLoading(false);
     }
   };
 
-  const togglePass = useCallback(() => setShowPass((v) => !v), []);
-
   return (
     <AuthLayout variant="purple">
       <AuthCard
         title="Welcome Back"
-        subtitle="Sign in to your account"
+        subtitle="Sign in with username and password"
         icon={LogIn}
         variant="purple"
       >
@@ -56,23 +53,13 @@ export default function Login() {
 
           <AuthInput
             label="Password"
-            type={showPass ? 'text' : 'password'}
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter your password"
             autoComplete="current-password"
             required
             icon={Lock}
-            suffix={(
-              <button
-                type="button"
-                onClick={togglePass}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-purple-400"
-                aria-label={showPass ? 'Hide password' : 'Show password'}
-              >
-                {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            )}
           />
 
           <AuthSubmitButton loading={loading} loadingText="Signing in..." icon={LogIn}>
