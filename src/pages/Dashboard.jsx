@@ -85,6 +85,20 @@ export default function Dashboard() {
     return n.toLocaleString();
   };
 
+  const parseProfitRate = (percent) => {
+    if (typeof percent === 'number') return percent;
+    const n = parseFloat(String(percent || '').replace('%', ''));
+    return Number.isFinite(n) ? n / 100 : 0.014;
+  };
+
+  const profile = data?.profile || user;
+  const todayStackProfit = parseFloat(data?.today_profit || 0);
+  const profitRate = parseProfitRate(data?.profit_percent || profile?.profit_percent);
+  const estimatedStackProfit = parseFloat(profile?.total_balance || 0) * profitRate;
+  const displayTodayProfit = todayStackProfit > 0
+    ? todayStackProfit
+    : (profile?.can_stack ? estimatedStackProfit : todayStackProfit);
+
   const handleStack = () => {
     if (!profile?.can_stack || stacking) return;
     setStackPreview(true);
@@ -94,8 +108,17 @@ export default function Dashboard() {
     setStackPreview(false);
     setStacking(true);
     try {
-      const { data } = await userAPI.stack();
-      setStackResult(data.stack_result);
+      const { data: stackData } = await userAPI.stack();
+      setStackResult(stackData.stack_result);
+      setData((prev) => {
+        if (!prev) return prev;
+        const earned = parseFloat(stackData.stack_result?.profit_earned || 0);
+        return {
+          ...prev,
+          today_profit: parseFloat(prev.today_profit || 0) + earned,
+          profile: stackData.profile || prev.profile,
+        };
+      });
       await refreshUser();
       await loadData();
     } catch (err) {
@@ -125,8 +148,6 @@ export default function Dashboard() {
       copyReferral();
     }
   };
-
-  const profile = data?.profile || user;
 
   const btcEquivalent = data?.btc_equivalent
     || (market?.price && profile?.available_balance
@@ -193,7 +214,7 @@ export default function Dashboard() {
               <div className="mb-2 rounded-lg border border-cs-green/25 bg-cs-green/10 px-2 py-1.5">
                 <p className="text-[8px] text-gray-400">Today Profit</p>
                 <AnimatedValue
-                  value={parseFloat(data?.today_profit || 0)}
+                  value={displayTodayProfit}
                   className="text-sm font-bold text-cs-green sm:text-base"
                   prefix="+$"
                 />
