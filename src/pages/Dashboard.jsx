@@ -19,7 +19,7 @@ import {
 import StackPreviewOverlay from '../components/StackPreviewOverlay';
 import StackResultModal from '../components/StackResultModal';
 import ExtraBonusFab from '../components/ExtraBonusFab';
-import DashboardPromotionCard from '../components/DashboardPromotionCard';
+import PromotionBonusFab from '../components/PromotionBonusFab';
 import logoImg from '../assets/logo.jpeg';
 
 export default function Dashboard() {
@@ -257,69 +257,64 @@ export default function Dashboard() {
           </p>
         </motion.div>
 
-        {/* Deposit, Withdraw, Pending & Promotion */}
-        <div className="mb-4 grid grid-cols-[minmax(0,1fr)_6.75rem] gap-2 sm:grid-cols-[minmax(0,1fr)_7.5rem] sm:gap-3">
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <motion.button
-                type="button"
-                onClick={() => navigate('/deposit')}
-                whileTap={{ scale: 0.98 }}
-                className="action-card action-card-deposit flex items-center gap-3 p-3 text-left"
-              >
-                <DepositNeonIcon size="xl" />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold text-cs-green">Deposit</p>
-                  <p className="text-[9px] text-gray-400">Add funds to your account</p>
-                </div>
-                <ChevronRight size={16} className="shrink-0 text-cs-green/50" />
-              </motion.button>
-
-              <motion.button
-                type="button"
-                onClick={() => navigate('/withdraw')}
-                whileTap={{ scale: 0.98 }}
-                className="action-card action-card-withdraw flex items-center gap-3 p-3 text-left"
-              >
-                <WithdrawNeonIcon size="xl" />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold text-cs-orange">Withdraw</p>
-                  <p className="text-[9px] text-gray-400">Withdraw your earnings</p>
-                </div>
-                <ChevronRight size={16} className="shrink-0 text-cs-orange/50" />
-              </motion.button>
+        {/* Deposit & Withdraw */}
+        <div className="mb-3 grid grid-cols-2 gap-3">
+          <motion.button
+            type="button"
+            onClick={() => navigate('/deposit')}
+            whileTap={{ scale: 0.98 }}
+            className="action-card action-card-deposit flex items-center gap-3 p-3 text-left"
+          >
+            <DepositNeonIcon size="xl" />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-cs-green">Deposit</p>
+              <p className="text-[9px] text-gray-400">Add funds to your account</p>
             </div>
+            <ChevronRight size={16} className="shrink-0 text-cs-green/50" />
+          </motion.button>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="pending-card card-dark glow-red flex items-center gap-2.5 p-3">
-                <PendingDepositNeonIcon size="sm" />
-                <div className="min-w-0">
-                  <p className="text-[9px] text-gray-400">Pending Deposits</p>
-                  <p className="text-sm font-bold text-cs-red">
-                    ${(data?.pending_deposits?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                  </p>
-                  <p className="text-[8px] font-medium text-cs-red/80">
-                    {data?.pending_deposits?.count || 0} Requests
-                  </p>
-                </div>
-              </div>
+          <motion.button
+            type="button"
+            onClick={() => navigate('/withdraw')}
+            whileTap={{ scale: 0.98 }}
+            className="action-card action-card-withdraw flex items-center gap-3 p-3 text-left"
+          >
+            <WithdrawNeonIcon size="xl" />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-cs-orange">Withdraw</p>
+              <p className="text-[9px] text-gray-400">Withdraw your earnings</p>
+            </div>
+            <ChevronRight size={16} className="shrink-0 text-cs-orange/50" />
+          </motion.button>
+        </div>
 
-              <div className="pending-card card-dark glow-gold flex items-center gap-2.5 p-3">
-                <PendingWithdrawNeonIcon size="sm" />
-                <div className="min-w-0">
-                  <p className="text-[9px] text-gray-400">Pending Withdrawals</p>
-                  <p className="text-sm font-bold text-cs-gold">
-                    ${(data?.pending_withdrawals?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                  </p>
-                  <p className="text-[8px] font-medium text-cs-gold/80">
-                    {data?.pending_withdrawals?.count || 0} Request
-                  </p>
-                </div>
-              </div>
+        {/* Pending */}
+        <div className="mb-4 grid grid-cols-2 gap-3">
+          <div className="pending-card card-dark glow-red flex items-center gap-2.5 p-3">
+            <PendingDepositNeonIcon size="sm" />
+            <div className="min-w-0">
+              <p className="text-[9px] text-gray-400">Pending Deposits</p>
+              <p className="text-sm font-bold text-cs-red">
+                ${(data?.pending_deposits?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </p>
+              <p className="text-[8px] font-medium text-cs-red/80">
+                {data?.pending_deposits?.count || 0} Requests
+              </p>
             </div>
           </div>
 
-          <DashboardPromotionCard />
+          <div className="pending-card card-dark glow-gold flex items-center gap-2.5 p-3">
+            <PendingWithdrawNeonIcon size="sm" />
+            <div className="min-w-0">
+              <p className="text-[9px] text-gray-400">Pending Withdrawals</p>
+              <p className="text-sm font-bold text-cs-gold">
+                ${(data?.pending_withdrawals?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </p>
+              <p className="text-[8px] font-medium text-cs-gold/80">
+                {data?.pending_withdrawals?.count || 0} Request
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Stats */}
@@ -530,7 +525,10 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <ExtraBonusFab dailyBonus={data?.daily_bonus} />
+      <div className="fixed right-3 top-1/2 z-50 flex -translate-y-1/2 flex-col items-center gap-5">
+        <ExtraBonusFab dailyBonus={data?.daily_bonus} />
+        <PromotionBonusFab />
+      </div>
       <StackPreviewOverlay
         active={stackPreview}
         onComplete={executeStack}
