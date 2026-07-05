@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import { useAuth } from '../context/AuthContext';
 import { referralIconPng } from '../components/DashboardIcons';
+import PromotionBonusBox from '../components/PromotionBonusBox';
 import { getReferralLink, getReferralShareText } from '../lib/referral';
 
 export default function Team() {
@@ -124,6 +125,8 @@ export default function Team() {
               </div>
             </div>
           </div>
+
+          <PromotionBonusBox compact className="mb-4" />
 
           <h3 className="mb-3 text-sm font-semibold">Referral Tier Levels</h3>
           <p className="mb-4 text-[10px] text-gray-500">

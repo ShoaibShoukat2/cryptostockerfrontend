@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Gift, Users, CheckCircle, Copy, Share2, Video, Megaphone } from 'lucide-react';
+import { Gift, Users, CheckCircle, Copy, Share2 } from 'lucide-react';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
+import PromotionBonusBox from '../components/PromotionBonusBox';
 import { useAuth } from '../context/AuthContext';
 import { userAPI } from '../api';
 
@@ -115,66 +116,7 @@ export default function Bonus() {
         </div>
 
         <div className="card-dark glow-purple mb-4 overflow-hidden p-6">
-          <div className="mb-5 flex items-center gap-3">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cs-purple/20">
-              <Megaphone size={28} className="text-cs-purple" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold">Promotion Bonus</h2>
-              <p className="text-sm text-gray-400">Upload videos and earn extra rewards</p>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-start gap-3 rounded-xl border border-cs-purple/30 bg-cs-purple/10 p-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cs-purple/20">
-                <Video size={18} className="text-cs-purple" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-white">Daily Upload Streak</p>
-                <p className="mt-1 text-xs leading-relaxed text-gray-400">
-                  Upload 1 video daily for 7 days
-                </p>
-              </div>
-              <span className="shrink-0 rounded-lg bg-cs-gold/20 px-2.5 py-1 text-sm font-bold text-cs-gold">
-                $5
-              </span>
-            </div>
-
-            <div className="flex items-start gap-3 rounded-xl border border-cs-border/50 bg-cs-dark/60 p-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cs-green/20">
-                <Video size={18} className="text-cs-green" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-white">5K Views Milestone</p>
-                <p className="mt-1 text-xs leading-relaxed text-gray-400">
-                  5k views on a video
-                </p>
-              </div>
-              <span className="shrink-0 rounded-lg bg-cs-gold/20 px-2.5 py-1 text-sm font-bold text-cs-gold">
-                $10
-              </span>
-            </div>
-
-            <div className="flex items-start gap-3 rounded-xl border border-cs-gold/30 bg-cs-gold/10 p-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cs-gold/20">
-                <Video size={18} className="text-cs-gold" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-white">10K Views Milestone</p>
-                <p className="mt-1 text-xs leading-relaxed text-gray-400">
-                  10k views on a video
-                </p>
-              </div>
-              <span className="shrink-0 rounded-lg bg-cs-gold/20 px-2.5 py-1 text-sm font-bold text-cs-gold">
-                $30
-              </span>
-            </div>
-          </div>
-
-          <p className="mt-4 text-center text-[10px] text-gray-500">
-            Contact support on Telegram to claim your promotion bonus rewards.
-          </p>
+          <PromotionBonusBox compact className="!border-0 !bg-transparent !p-0 !shadow-none" />
         </div>
       </div>
       <BottomNav />
