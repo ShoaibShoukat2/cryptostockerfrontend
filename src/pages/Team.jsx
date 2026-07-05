@@ -5,12 +5,15 @@ import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import { useAuth } from '../context/AuthContext';
 import { referralIconPng } from '../components/DashboardIcons';
+import { getReferralLink, getReferralShareText } from '../lib/referral';
 
 export default function Team() {
   const { user, refreshUser } = useAuth();
   const [data, setData] = useState(null);
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
+  const referralCode = user?.referral_code || '';
+  const referralLink = getReferralLink(referralCode);
 
   useEffect(() => {
     const load = async () => {
@@ -27,23 +30,23 @@ export default function Team() {
     load();
   }, [refreshUser]);
 
-  const copyCode = () => {
-    navigator.clipboard.writeText(user?.referral_code || '');
+  const copyLink = () => {
+    navigator.clipboard.writeText(referralLink || referralCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const shareCode = async () => {
-    const text = `Join Crypto Stacker with my referral code: ${user?.referral_code}`;
+    const text = getReferralShareText(referralCode);
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'Crypto Stacker', text });
+        await navigator.share({ title: 'Crypto Stacker', text, url: referralLink });
         return;
       } catch {
         /* fallback */
       }
     }
-    copyCode();
+    copyLink();
   };
 
   if (loading) {
@@ -69,10 +72,14 @@ export default function Team() {
 
           <div className="mb-4 rounded-xl border border-cs-border bg-cs-dark p-4 text-center">
             <p className="mb-1 text-xs text-gray-500">Your Referral Code</p>
-            <p className="mb-2 font-mono text-2xl font-bold text-cs-gold">{user?.referral_code}</p>
+            <p className="mb-3 font-mono text-2xl font-bold text-cs-gold">{referralCode}</p>
+            <p className="mb-1 text-xs text-gray-500">Referral Link</p>
+            <p className="mb-3 break-all rounded-lg border border-cs-border/60 bg-black/20 px-3 py-2 text-xs font-medium leading-relaxed text-cs-purple">
+              {referralLink || '—'}
+            </p>
             <div className="flex justify-center gap-2">
-              <button type="button" onClick={copyCode} className="gradient-btn flex items-center gap-1 rounded-xl px-4 py-2 text-sm text-white">
-                <Copy size={14} /> {copied ? 'Copied!' : 'Copy'}
+              <button type="button" onClick={copyLink} className="gradient-btn flex items-center gap-1 rounded-xl px-4 py-2 text-sm text-white">
+                <Copy size={14} /> {copied ? 'Copied!' : 'Copy Link'}
               </button>
               <button type="button" onClick={shareCode} className="flex items-center gap-1 rounded-xl border border-cs-purple/30 bg-cs-purple/10 px-4 py-2 text-sm text-cs-purple">
                 <Share2 size={14} /> Share

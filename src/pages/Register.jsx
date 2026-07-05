@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   Eye, EyeOff, UserPlus, User, Mail, Lock, Gift,
 } from 'lucide-react';
@@ -9,9 +9,11 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Register() {
   const { register } = useAuth();
+  const [searchParams] = useSearchParams();
+  const refFromUrl = searchParams.get('ref') || searchParams.get('referral_code') || '';
   const [form, setForm] = useState({
     username: '', email: '', password: '', password2: '',
-    first_name: '', last_name: '', referral_code: '',
+    first_name: '', last_name: '', referral_code: refFromUrl,
   });
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
