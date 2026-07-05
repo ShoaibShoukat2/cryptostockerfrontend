@@ -13,7 +13,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('user');
     setUser(null);
   }, []);
-
+// new
   useEffect(() => {
     const initAuth = async () => {
       const token = localStorage.getItem('access_token');
