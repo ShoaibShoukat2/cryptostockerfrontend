@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Users, ArrowDownToLine, ArrowUpFromLine,
-  Receipt, LogOut, Shield, Menu, X, RefreshCw, Settings,
+  Receipt, LogOut, Shield, Menu, X, RefreshCw, Settings, MessageCircle,
 } from 'lucide-react';
 import { Logo } from './Logo';
 
@@ -10,6 +10,7 @@ const navItems = [
   { id: 'deposits', icon: ArrowDownToLine, label: 'Deposits' },
   { id: 'withdrawals', icon: ArrowUpFromLine, label: 'Withdrawals' },
   { id: 'transactions', icon: Receipt, label: 'Transactions' },
+  { id: 'telegram', icon: MessageCircle, label: 'Telegram' },
   { id: 'settings', icon: Settings, label: 'Settings' },
 ];
 

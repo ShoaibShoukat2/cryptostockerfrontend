@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Users, ArrowDownToLine, ArrowUpFromLine, DollarSign,
   CheckCircle, XCircle, Search, Bell, Edit3, Ban, Check,
-  Clock, TrendingUp, AlertCircle,
+  Clock, TrendingUp, AlertCircle, MessageCircle, ExternalLink,
 } from 'lucide-react';
 import { adminAPI } from '../api';
 import AdminLayout from '../components/AdminLayout';
@@ -183,6 +183,8 @@ export default function AdminDashboard() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [siteConfig, setSiteConfig] = useState(null);
   const [configSaving, setConfigSaving] = useState(false);
+  const [telegramSaving, setTelegramSaving] = useState(false);
+  const [telegramLink, setTelegramLink] = useState('');
 
   const loadAll = useCallback(async () => {
     setLoading(true);
@@ -202,6 +204,7 @@ export default function AdminDashboard() {
       setUsers(userRes.data);
       setTransactions(txRes.data);
       setSiteConfig(cfgRes.data);
+      setTelegramLink(cfgRes.data.telegram_link || '');
     } catch {
       setError('Failed to load admin data.');
     } finally {
@@ -224,6 +227,30 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = () => { logout(); navigate('/login'); };
+
+  const normalizeTelegramLink = (value) => {
+    const trimmed = value.trim();
+    if (!trimmed) return '';
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+    if (trimmed.startsWith('t.me/')) return `https://${trimmed}`;
+    if (trimmed.startsWith('@')) return `https://t.me/${trimmed.slice(1)}`;
+    return `https://t.me/${trimmed}`;
+  };
+
+  const saveTelegramLink = async () => {
+    setTelegramSaving(true);
+    try {
+      const link = normalizeTelegramLink(telegramLink);
+      const { data } = await adminAPI.updateConfig({ telegram_link: link });
+      setSiteConfig(data);
+      setTelegramLink(data.telegram_link || link);
+      alert('Telegram link updated!');
+    } catch {
+      alert('Failed to update Telegram link');
+    } finally {
+      setTelegramSaving(false);
+    }
+  };
 
   const filterBySearch = (list, fields) => {
     if (!search) return list;
@@ -498,16 +525,65 @@ export default function AdminDashboard() {
         </div>
       )}
 
+      {/* TELEGRAM */}
+      {tab === 'telegram' && (
+        <div className="card-dark max-w-xl p-6">
+          <div className="mb-6 flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cs-purple/20">
+              <MessageCircle size={24} className="text-cs-purple" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold">Telegram Support Link</h2>
+              <p className="text-xs text-gray-500">Users will see this on Help & Support page</p>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="mb-1 block text-xs text-gray-400">Telegram Link or Username</label>
+            <input
+              type="text"
+              value={telegramLink}
+              onChange={(e) => setTelegramLink(e.target.value)}
+              placeholder="https://t.me/yourgroup or @yourgroup"
+              className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 text-sm focus:border-cs-purple focus:outline-none"
+            />
+            <p className="mt-2 text-[10px] text-gray-500">
+              Examples: https://t.me/cryptostacker, @cryptostacker, cryptostacker
+            </p>
+          </div>
+
+          {telegramLink && (
+            <a
+              href={normalizeTelegramLink(telegramLink)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-4 flex items-center gap-2 rounded-xl border border-cs-purple/30 bg-cs-purple/10 px-4 py-3 text-sm text-cs-purple hover:bg-cs-purple/20"
+            >
+              <ExternalLink size={16} />
+              Preview: {normalizeTelegramLink(telegramLink)}
+            </a>
+          )}
+
+          <button
+            type="button"
+            disabled={telegramSaving || !telegramLink.trim()}
+            onClick={saveTelegramLink}
+            className="gradient-btn rounded-xl px-6 py-2.5 text-sm font-bold text-white disabled:opacity-50"
+          >
+            {telegramSaving ? 'Saving...' : 'Save Telegram Link'}
+          </button>
+        </div>
+      )}
+
       {/* SETTINGS */}
       {tab === 'settings' && siteConfig && (
         <div className="card-dark max-w-2xl p-6">
           <h2 className="mb-4 text-lg font-bold">Platform Settings</h2>
-          <p className="mb-6 text-xs text-gray-500">Configure deposit addresses, Telegram, and business rules.</p>
+          <p className="mb-6 text-xs text-gray-500">Configure deposit addresses and business rules. Telegram link is managed in the Telegram tab.</p>
           <div className="space-y-4">
             {[
               { key: 'bep20_address', label: 'BEP20 USDT Address' },
               { key: 'trc20_address', label: 'TRC20 USDT Address' },
-              { key: 'telegram_link', label: 'Telegram Support Link' },
               { key: 'min_deposit', label: 'Minimum Deposit ($)', type: 'number' },
               { key: 'min_withdraw', label: 'Minimum Withdraw ($)', type: 'number' },
               { key: 'referral_commission_rate', label: 'Referral Commission (0.12 = 12%)', type: 'number', step: '0.01' },
