@@ -52,7 +52,7 @@ export default function Profile() {
 
         <div className="card-dark mb-4 space-y-3 p-4">
           {[
-            { icon: Mail, label: 'Email', value: user?.user?.email },
+            { icon: Mail, label: 'Email', value: user?.email || user?.user?.email || '—' },
             { icon: Shield, label: 'Referral Code', value: user?.referral_code },
             { icon: Wallet, label: 'Available Balance', value: `$${parseFloat(user?.available_balance || 0).toFixed(2)}` },
             { icon: TrendingUp, label: 'Referral Bonus', value: `$${parseFloat(user?.total_referral_bonus || 0).toFixed(2)}` },

@@ -1,5 +1,16 @@
 import API from './axios';
 
+async function requestWithAdminAccountFallback(primaryCall, fallbackCall) {
+  try {
+    return await primaryCall();
+  } catch (err) {
+    if (err.response?.status === 404) {
+      return fallbackCall();
+    }
+    throw err;
+  }
+}
+
 export const authAPI = {
   login: (username, password) => API.post('/auth/login/', { username, password }),
   register: (data) => API.post('/auth/register/', data),
@@ -43,9 +54,50 @@ export const adminAPI = {
   rejectWithdrawal: (id) => API.post(`/admin/withdrawals/${id}/reject/`),
   getContactMessages: () => API.get('/admin/contact-messages/'),
   markContactRead: (id) => API.post(`/admin/contact-messages/${id}/read/`),
-  getAdminAccount: () => API.get('/admin/account/'),
-  createAdminAccount: (data) => API.post('/admin/account/', data),
-  updateAdminAccount: (data) => API.patch('/admin/account/', data),
+  getAdminAccount: () => requestWithAdminAccountFallback(
+    () => API.get('/admin/account/'),
+    async () => {
+      try {
+        return await API.get('/admin/config/account/');
+      } catch (err) {
+        if (err.response?.status === 404) {
+          const dash = await API.get('/admin/dashboard/');
+          return { data: dash.data.admin_accounts };
+        }
+        throw err;
+      }
+    },
+  ),
+  createAdminAccount: (data) => requestWithAdminAccountFallback(
+    () => API.post('/admin/account/', data),
+    () => API.post('/admin/config/', { action: 'create_admin_account', ...data }),
+  ),
+  updateAdminAccount: (data) => requestWithAdminAccountFallback(
+    () => API.patch('/admin/account/', data),
+    async () => {
+      try {
+        return await API.patch('/admin/config/account/', data);
+      } catch (err) {
+        if (err.response?.status === 404) {
+          try {
+            return await API.patch('/admin/config/', { action: 'update_admin_account', ...data });
+          } catch (configErr) {
+            if (configErr.response?.status === 404) {
+              const adminId = data.admin_id;
+              const payload = { username: data.username };
+              if (data.password) {
+                payload.password = data.password;
+                payload.confirm_password = data.confirm_password;
+              }
+              return API.patch(`/admin/users/${adminId}/`, payload);
+            }
+            throw configErr;
+          }
+        }
+        throw err;
+      }
+    },
+  ),
 };
 
 export default API;

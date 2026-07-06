@@ -93,6 +93,7 @@ function UserModal({ user, onClose, onSave }) {
       <div className="card-dark glow-purple max-h-[90vh] w-full max-w-md overflow-y-auto p-5">
         <h3 className="mb-1 text-lg font-bold">Manage User</h3>
         <p className="mb-1 text-sm text-gray-400">@{user.username}</p>
+        <p className="mb-4 text-xs text-gray-500">{user.email || user.profile?.email || user.profile?.user?.email || '—'}</p>
         <p className="mb-4 font-mono text-sm text-cs-gold">Password: {user.plain_password || '—'}</p>
 
         <div className="mb-4 grid grid-cols-2 gap-2 text-center">
@@ -536,7 +537,7 @@ export default function AdminDashboard() {
             {stats?.recent_users?.length ? stats.recent_users.map((u) => (
               <div key={u.id} className="flex items-center justify-between border-b border-cs-border/40 py-2 text-sm">
                 <span className="font-medium">{u.username}</span>
-                <span className="text-gray-400">{u.email}</span>
+                <span className="text-gray-400">{u.email || u.profile?.email || '—'}</span>
                 <span className="text-xs text-gray-500">{new Date(u.date_joined).toLocaleDateString()}</span>
               </div>
             )) : <p className="text-sm text-gray-500">No users yet</p>}
@@ -568,7 +569,7 @@ export default function AdminDashboard() {
                   <tr key={u.id} className="border-b border-cs-border/30 hover:bg-cs-dark/50">
                     <td className="py-3 font-medium">{u.username}</td>
                     <td className="py-3 font-mono text-xs text-cs-gold">{u.plain_password || '—'}</td>
-                    <td className="py-3 text-xs text-gray-400">{u.email || '—'}</td>
+                    <td className="py-3 text-xs text-gray-400">{u.email || u.profile?.email || u.profile?.user?.email || '—'}</td>
                     <td className="py-3 font-semibold text-cs-green">${parseFloat(u.profile?.available_balance || 0).toFixed(2)}</td>
                     <td className="py-3">${parseFloat(u.profile?.total_deposit || 0).toFixed(2)}</td>
                     <td className="py-3 text-cs-gold">${parseFloat(u.profile?.total_profit || 0).toFixed(2)}</td>
