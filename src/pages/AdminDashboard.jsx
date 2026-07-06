@@ -3,12 +3,103 @@ import { useNavigate } from 'react-router-dom';
 import {
   Users, ArrowDownToLine, ArrowUpFromLine, DollarSign,
   CheckCircle, XCircle, Search, Bell, Edit3, Ban, Check,
-  Clock, TrendingUp, AlertCircle, MessageCircle, ExternalLink, Megaphone, Mail, KeyRound,
+  Clock, TrendingUp, AlertCircle, MessageCircle, ExternalLink, Megaphone, Mail, KeyRound, BadgePercent,
 } from 'lucide-react';
 import { adminAPI } from '../api';
 import AdminLayout from '../components/AdminLayout';
 import { useAuth } from '../context/AuthContext';
 import { formatSupportLinkLabel, normalizeSupportLink } from '../lib/support';
+
+const LEVEL_REQUIREMENTS = [
+  { level: 1, direct: 0, indirect: 0, deposit: 100 },
+  { level: 2, direct: 8, indirect: 2, deposit: 1000 },
+  { level: 3, direct: 22, indirect: 8, deposit: 3000 },
+  { level: 4, direct: 38, indirect: 12, deposit: 5000 },
+];
+
+const rateToPercent = (rate) => {
+  const pct = parseFloat(rate || 0) * 100;
+  if (!Number.isFinite(pct)) return '';
+  return pct % 1 === 0 ? String(pct.toFixed(0)) : String(pct.toFixed(1));
+};
+
+function LevelProfitsEditor({ levelsForm, onChange, onSave, saving, compact = false }) {
+  return (
+    <div className={compact ? '' : 'card-dark max-w-2xl p-6'}>
+      {!compact && (
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cs-purple/20">
+            <BadgePercent size={24} className="text-cs-purple" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold">Daily Profit & Level Percentages</h2>
+            <p className="text-xs text-gray-500">
+              Set daily stack profit for each referral tier level
+            </p>
+          </div>
+        </div>
+      )}
+
+      {compact && (
+        <div className="mb-4 flex items-center gap-2">
+          <BadgePercent size={18} className="text-cs-purple" />
+          <h3 className="text-sm font-bold text-white">Daily Profit & Level Percentages</h3>
+        </div>
+      )}
+
+      <p className="mb-4 rounded-xl border border-cs-border/50 bg-cs-dark/40 p-3 text-xs text-gray-400">
+        Enter daily profit as a percentage. Example: <span className="font-mono text-cs-green">1.4</span> = 1.4% daily,
+        {' '}<span className="font-mono text-cs-green">2</span> = 2% daily. Applies when users click Stack Now.
+      </p>
+
+      <div className="space-y-4">
+        {LEVEL_REQUIREMENTS.map((req) => {
+          const percentKey = `tier${req.level}_profit_percent`;
+          const percentValue = levelsForm[percentKey] ?? '';
+          return (
+            <div key={req.level} className="rounded-xl border border-cs-border/50 bg-cs-dark/40 p-4">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-bold text-white">Level {req.level}</p>
+                  <p className="text-[10px] text-gray-500">
+                    Requires {req.direct} direct, {req.indirect} indirect, ${req.deposit.toLocaleString()} deposit
+                  </p>
+                </div>
+                <span className="rounded-lg bg-cs-green/15 px-2 py-1 text-xs font-bold text-cs-green">
+                  {percentValue ? `${percentValue}%` : '0%'} daily
+                </span>
+              </div>
+              <label className="mb-1 block text-xs text-gray-400">
+                Daily Profit Percentage (%)
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  step="0.1"
+                  min="0.1"
+                  max="100"
+                  value={percentValue}
+                  onChange={(e) => onChange(percentKey, e.target.value)}
+                  className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-2.5 pr-10 text-sm focus:border-cs-purple focus:outline-none"
+                />
+                <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">%</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <button
+        type="button"
+        disabled={saving}
+        onClick={onSave}
+        className="gradient-btn mt-6 rounded-xl px-6 py-2.5 text-sm font-bold text-white disabled:opacity-50"
+      >
+        {saving ? 'Saving...' : 'Save Daily Profit & Levels'}
+      </button>
+    </div>
+  );
+}
 
 const statusStyle = {
   pending: 'bg-yellow-500/20 text-yellow-400',
@@ -193,6 +284,7 @@ export default function AdminDashboard() {
     telegram_link: '',
   });
   const [promotionSaving, setPromotionSaving] = useState(false);
+  const [levelsSaving, setLevelsSaving] = useState(false);
   const [promotionForm, setPromotionForm] = useState({
     promotion_bonus_subtitle: '',
     promotion_bonus_note: '',
@@ -202,6 +294,12 @@ export default function AdminDashboard() {
     promotion_tier2_reward: '',
     promotion_tier3_detail: '',
     promotion_tier3_reward: '',
+  });
+  const [levelsForm, setLevelsForm] = useState({
+    tier1_profit_percent: '1.4',
+    tier2_profit_percent: '2',
+    tier3_profit_percent: '2.5',
+    tier4_profit_percent: '3',
   });
   const [adminAccounts, setAdminAccounts] = useState(null);
   const [adminAccountSaving, setAdminAccountSaving] = useState(false);
@@ -250,6 +348,12 @@ export default function AdminDashboard() {
         promotion_tier2_reward: cfgRes.data.promotion_tier2_reward ?? '10',
         promotion_tier3_detail: cfgRes.data.promotion_tier3_detail || '10k views on a video',
         promotion_tier3_reward: cfgRes.data.promotion_tier3_reward ?? '30',
+      });
+      setLevelsForm({
+        tier1_profit_percent: rateToPercent(cfgRes.data.tier1_profit_rate ?? '0.014'),
+        tier2_profit_percent: rateToPercent(cfgRes.data.tier2_profit_rate ?? '0.02'),
+        tier3_profit_percent: rateToPercent(cfgRes.data.tier3_profit_rate ?? '0.025'),
+        tier4_profit_percent: rateToPercent(cfgRes.data.tier4_profit_rate ?? '0.03'),
       });
 
       try {
@@ -391,6 +495,35 @@ export default function AdminDashboard() {
 
   const updatePromotionField = (key, value) => {
     setPromotionForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const updateLevelsField = (key, value) => {
+    setLevelsForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const saveLevelProfits = async () => {
+    setLevelsSaving(true);
+    try {
+      const payload = {
+        tier1_profit_rate: parseFloat(levelsForm.tier1_profit_percent || 0) / 100,
+        tier2_profit_rate: parseFloat(levelsForm.tier2_profit_percent || 0) / 100,
+        tier3_profit_rate: parseFloat(levelsForm.tier3_profit_percent || 0) / 100,
+        tier4_profit_rate: parseFloat(levelsForm.tier4_profit_percent || 0) / 100,
+      };
+      const { data } = await adminAPI.updateConfig(payload);
+      setSiteConfig(data);
+      setLevelsForm({
+        tier1_profit_percent: rateToPercent(data.tier1_profit_rate ?? '0.014'),
+        tier2_profit_percent: rateToPercent(data.tier2_profit_rate ?? '0.02'),
+        tier3_profit_percent: rateToPercent(data.tier3_profit_rate ?? '0.025'),
+        tier4_profit_percent: rateToPercent(data.tier4_profit_rate ?? '0.03'),
+      });
+      alert('Daily profit & level percentages updated!');
+    } catch {
+      alert('Failed to update daily profit percentages');
+    } finally {
+      setLevelsSaving(false);
+    }
   };
 
   const savePromotionBonus = async () => {
@@ -1090,6 +1223,16 @@ export default function AdminDashboard() {
         </div>
       )}
 
+      {/* LEVEL PROFITS */}
+      {tab === 'levels' && (
+        <LevelProfitsEditor
+          levelsForm={levelsForm}
+          onChange={updateLevelsField}
+          onSave={saveLevelProfits}
+          saving={levelsSaving}
+        />
+      )}
+
       {/* SETTINGS */}
       {tab === 'settings' && siteConfig && (
         <div className="card-dark max-w-2xl p-6">
@@ -1117,6 +1260,15 @@ export default function AdminDashboard() {
                 />
               </div>
             ))}
+            <div className="rounded-xl border border-cs-purple/30 bg-cs-purple/5 p-4">
+              <LevelProfitsEditor
+                compact
+                levelsForm={levelsForm}
+                onChange={updateLevelsField}
+                onSave={saveLevelProfits}
+                saving={levelsSaving}
+              />
+            </div>
             <div>
               <label className="mb-1 block text-xs text-gray-400">About Us Text</label>
               <textarea

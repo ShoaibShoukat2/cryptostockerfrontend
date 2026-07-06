@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Users, ArrowDownToLine, ArrowUpFromLine,
-  Receipt, LogOut, Shield, Menu, X, RefreshCw, Settings, MessageCircle, Megaphone, Mail, KeyRound,
+  Receipt, LogOut, Shield, Menu, X, RefreshCw, Settings, MessageCircle, Megaphone, Mail, KeyRound, BadgePercent,
 } from 'lucide-react';
 import { Logo } from './Logo';
 
@@ -13,6 +13,7 @@ const navItems = [
   { id: 'support', icon: MessageCircle, label: 'Support Link' },
   { id: 'contact', icon: Mail, label: 'Contact Us' },
   { id: 'promotion', icon: Megaphone, label: 'Promotion Bonus' },
+  { id: 'levels', icon: BadgePercent, label: 'Daily Profit & Levels' },
   { id: 'admin-account', icon: KeyRound, label: 'Admin Account' },
   { id: 'settings', icon: Settings, label: 'Settings' },
 ];
