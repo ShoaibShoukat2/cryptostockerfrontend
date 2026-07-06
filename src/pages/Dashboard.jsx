@@ -86,19 +86,8 @@ export default function Dashboard() {
     return n.toLocaleString();
   };
 
-  const parseProfitRate = (percent) => {
-    if (typeof percent === 'number') return percent;
-    const n = parseFloat(String(percent || '').replace('%', ''));
-    return Number.isFinite(n) ? n / 100 : 0.014;
-  };
-
   const profile = data?.profile || user;
   const todayStackProfit = parseFloat(data?.today_profit || 0);
-  const profitRate = parseProfitRate(data?.profit_percent || profile?.profit_percent);
-  const estimatedStackProfit = parseFloat(profile?.total_balance || 0) * profitRate;
-  const displayTodayProfit = todayStackProfit > 0
-    ? todayStackProfit
-    : (profile?.can_stack ? estimatedStackProfit : todayStackProfit);
 
   const handleStack = () => {
     if (!profile?.can_stack || stacking) return;
@@ -215,7 +204,7 @@ export default function Dashboard() {
               <div className="mb-2 rounded-lg border border-cs-green/25 bg-cs-green/10 px-2 py-1.5">
                 <p className="text-[8px] text-gray-400">Today Profit</p>
                 <AnimatedValue
-                  value={displayTodayProfit}
+                  value={todayStackProfit}
                   className="text-sm font-bold text-cs-green sm:text-base"
                   prefix="+$"
                 />
