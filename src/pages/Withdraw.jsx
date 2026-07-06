@@ -23,6 +23,7 @@ const RULES = [
 export default function Withdraw() {
   const { user, refreshUser } = useAuth();
   const [amount, setAmount] = useState('');
+  const [network, setNetwork] = useState('BEP20');
   const [walletAddress, setWalletAddress] = useState('');
   const [minWithdraw, setMinWithdraw] = useState(20);
   const [loading, setLoading] = useState(false);
@@ -60,10 +61,12 @@ export default function Withdraw() {
     try {
       await userAPI.createWithdrawal({
         amount: parseFloat(amount),
+        network,
         wallet_address: walletAddress,
       });
-      setSuccess('Withdrawal request submitted! Processing time: 24–72 hours.');
+      setSuccess(`Withdrawal request submitted via ${network}! Processing time: 24–72 hours.`);
       setAmount('');
+      setNetwork('BEP20');
       setWalletAddress('');
       await loadWithdrawals();
       await refreshUser();
@@ -127,6 +130,26 @@ export default function Withdraw() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
+              <label className="mb-2 block text-xs text-gray-400">Select Network</label>
+              <div className="flex gap-2">
+                {['BEP20', 'TRC20'].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setNetwork(n)}
+                    className={`flex-1 rounded-xl border py-2.5 text-sm font-bold transition ${
+                      network === n
+                        ? 'border-cs-orange bg-cs-orange/20 text-cs-orange'
+                        : 'border-cs-border text-gray-500'
+                    }`}
+                    disabled={hasPending}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
               <label className="mb-1 block text-xs text-gray-400">Amount (USD)</label>
               <input
                 type="number"
@@ -142,13 +165,15 @@ export default function Withdraw() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-gray-400">Wallet Address (BEP20 / TRC20)</label>
+              <label className="mb-1 block text-xs text-gray-400">
+                Wallet Address ({network} USDT)
+              </label>
               <input
                 type="text"
                 value={walletAddress}
                 onChange={(e) => setWalletAddress(e.target.value)}
                 className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-3 font-mono text-sm focus:border-cs-orange focus:outline-none"
-                placeholder="Enter your USDT wallet address"
+                placeholder={network === 'BEP20' ? 'Enter BEP20 (BSC) wallet address' : 'Enter TRC20 (TRON) wallet address'}
                 required
                 disabled={hasPending}
               />
@@ -177,7 +202,12 @@ export default function Withdraw() {
               {withdrawals.map((w) => (
                 <div key={w.id} className="flex items-center justify-between border-b border-cs-border/50 py-3">
                   <div className="min-w-0 flex-1 pr-2">
-                    <p className="text-sm font-semibold text-cs-orange">${parseFloat(w.amount).toFixed(2)}</p>
+                    <div className="mb-0.5 flex items-center gap-2">
+                      <p className="text-sm font-semibold text-cs-orange">${parseFloat(w.amount).toFixed(2)}</p>
+                      <span className="rounded bg-cs-orange/15 px-1.5 py-0.5 text-[9px] font-bold text-cs-orange">
+                        {w.network || 'BEP20'}
+                      </span>
+                    </div>
                     <p className="truncate font-mono text-[10px] text-gray-500">{w.wallet_address}</p>
                     <p className="text-[10px] text-gray-500">{new Date(w.created_at).toLocaleString()}</p>
                   </div>

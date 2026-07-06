@@ -432,7 +432,7 @@ export default function AdminDashboard() {
 
   const filteredUsers = useMemo(() => filterBySearch(users, ['username', 'email', 'plain_password']), [users, search]);
   const filteredDeposits = useMemo(() => filterByStatus(filterBySearch(deposits, ['username', 'transaction_id'])), [deposits, search, statusFilter]);
-  const filteredWithdrawals = useMemo(() => filterByStatus(filterBySearch(withdrawals, ['username', 'wallet_address'])), [withdrawals, search, statusFilter]);
+  const filteredWithdrawals = useMemo(() => filterByStatus(filterBySearch(withdrawals, ['username', 'wallet_address', 'network'])), [withdrawals, search, statusFilter]);
   const filteredTx = useMemo(() => filterBySearch(transactions, ['username', 'type', 'description']), [transactions, search]);
   const filteredContacts = useMemo(
     () => filterBySearch(contacts, ['username', 'email', 'subject', 'message']),
@@ -524,7 +524,10 @@ export default function AdminDashboard() {
               <h3 className="mb-3 flex items-center gap-2 font-bold"><ArrowUpFromLine size={16} className="text-cs-orange" /> Recent Withdrawals</h3>
               {stats?.recent_withdrawals?.length ? stats.recent_withdrawals.map((w) => (
                 <div key={w.id} className="flex items-center justify-between border-b border-cs-border/40 py-2 text-sm">
-                  <span>{w.username}</span>
+                  <div className="min-w-0">
+                    <span>{w.username}</span>
+                    <span className="ml-2 text-[10px] text-cs-orange">{w.network || 'BEP20'}</span>
+                  </div>
                   <span className="text-cs-orange">${parseFloat(w.amount).toFixed(2)}</span>
                   <StatusBadge status={w.status} />
                 </div>
@@ -659,8 +662,8 @@ export default function AdminDashboard() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-cs-border text-left text-[10px] text-gray-500">
-                  <th className="py-2">User</th><th className="py-2">Amount</th><th className="py-2">Wallet</th>
-                  <th className="py-2">Status</th><th className="py-2">Date</th><th className="py-2 text-right">Actions</th>
+                  <th className="py-2">User</th><th className="py-2">Amount</th><th className="py-2">Network</th>
+                  <th className="py-2">Wallet</th><th className="py-2">Status</th><th className="py-2">Date</th><th className="py-2 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -668,7 +671,21 @@ export default function AdminDashboard() {
                   <tr key={w.id} className="border-b border-cs-border/30">
                     <td className="py-3 font-medium">{w.username}</td>
                     <td className="py-3 font-bold text-cs-orange">${parseFloat(w.amount).toFixed(2)}</td>
-                    <td className="max-w-[140px] truncate py-3 font-mono text-[10px] text-gray-400">{w.wallet_address}</td>
+                    <td className="py-3">
+                      <span className={`rounded px-2 py-0.5 text-[10px] font-bold ${
+                        w.network === 'TRC20'
+                          ? 'bg-cs-gold/15 text-cs-gold'
+                          : 'bg-cs-purple/15 text-cs-purple'
+                      }`}
+                      >
+                        {w.network || 'BEP20'}
+                      </span>
+                    </td>
+                    <td className="max-w-[160px] py-3">
+                      <p className="truncate font-mono text-[10px] text-gray-400" title={w.wallet_address}>
+                        {w.wallet_address}
+                      </p>
+                    </td>
                     <td className="py-3"><StatusBadge status={w.status} /></td>
                     <td className="py-3 text-xs text-gray-500">{new Date(w.created_at).toLocaleString()}</td>
                     <td className="py-3 text-right">
