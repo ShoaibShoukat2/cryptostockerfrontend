@@ -33,8 +33,8 @@ export default function AdminLayout({
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed left-0 top-0 z-50 flex h-full w-64 flex-col border-r border-cs-border bg-cs-dark transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="border-b border-cs-border p-4">
+      <aside className={`fixed left-0 top-0 z-50 flex h-dvh w-64 flex-col overflow-hidden border-r border-cs-border bg-cs-dark transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="shrink-0 border-b border-cs-border p-4">
           <Logo size="xs" centered={false} showTagline={false} />
           <div className="mt-2 flex items-center gap-2">
             <Shield size={14} className="text-cs-red" />
@@ -42,7 +42,7 @@ export default function AdminLayout({
           </div>
         </div>
 
-        <nav className="flex-1 space-y-1 p-3">
+        <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto p-3">
           {navItems.map(({ id, icon: Icon, label }) => (
             <button
               key={id}
@@ -60,7 +60,7 @@ export default function AdminLayout({
           ))}
         </nav>
 
-        <div className="border-t border-cs-border p-3">
+        <div className="shrink-0 border-t border-cs-border p-3">
           <button
             type="button"
             onClick={onLogout}
