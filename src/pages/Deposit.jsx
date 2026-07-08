@@ -19,7 +19,7 @@ export default function Deposit() {
   const [network, setNetwork] = useState('BEP20');
   const [screenshot, setScreenshot] = useState(null);
   const [preview, setPreview] = useState('');
-  const [config, setConfig] = useState({ min_deposit: 100, bep20_address: '', trc20_address: '' });
+  const [config, setConfig] = useState({ min_deposit: 50, bep20_address: '', trc20_address: '' });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
@@ -104,7 +104,7 @@ export default function Deposit() {
             <DepositNeonIcon size="lg" />
             <div>
               <h2 className="text-xl font-bold text-cs-green">Deposit Funds</h2>
-              <p className="text-sm text-gray-400">Minimum deposit ${config.min_deposit || 100}</p>
+              <p className="text-sm text-gray-400">Minimum deposit ${config.min_deposit || 50}</p>
             </div>
           </div>
 
@@ -151,15 +151,15 @@ export default function Deposit() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-1 block text-xs text-gray-400">Amount (USD) — Min ${config.min_deposit || 100}</label>
+              <label className="mb-1 block text-xs text-gray-400">Amount (USD) — Min ${config.min_deposit || 50}</label>
               <input
                 type="number"
                 step="0.01"
-                min={config.min_deposit || 100}
+                min={config.min_deposit || 50}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 className="w-full rounded-xl border border-cs-border bg-cs-dark px-4 py-3 text-lg font-bold focus:border-cs-purple focus:outline-none"
-                placeholder="100.00"
+                placeholder="50.00"
                 required
               />
             </div>

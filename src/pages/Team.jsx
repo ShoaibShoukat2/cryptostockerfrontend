@@ -116,9 +116,9 @@ export default function Team() {
                 </p>
                 <p className="mt-1.5 text-[10px] text-gray-500">
                   Example:{' '}
-                  <span className="font-semibold text-white">$100 deposit</span>
+                  <span className="font-semibold text-white">$50 deposit</span>
                   {' = '}
-                  <span className="font-bold text-cs-gold">$12 commission</span>
+                  <span className="font-bold text-cs-gold">$6 commission</span>
                   {' for you'}
                 </p>
               </div>

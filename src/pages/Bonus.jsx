@@ -38,7 +38,7 @@ export default function Bonus() {
   const count = bonus?.qualified_referrals ?? bonus?.referrals_today ?? 0;
   const required = bonus?.required ?? 3;
   const amount = bonus?.bonus_amount ?? 15;
-  const minDeposit = bonus?.min_deposit_required ?? 100;
+  const minDeposit = bonus?.min_deposit_required ?? 50;
   const awarded = bonus?.awarded_lifetime ?? bonus?.awarded_today ?? false;
   const progress = Math.min(100, (count / required) * 100);
 

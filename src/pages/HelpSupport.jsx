@@ -36,7 +36,7 @@ export default function HelpSupport() {
     },
     {
       q: 'What is the minimum deposit?',
-      a: 'Minimum deposit is $100 via BEP20 or TRC20 USDT.',
+      a: 'Minimum deposit is $50 via BEP20 or TRC20 USDT.',
     },
     {
       q: 'How long does withdrawal take?',
@@ -48,7 +48,7 @@ export default function HelpSupport() {
     },
     {
       q: 'What is referral commission?',
-      a: 'You earn 12% commission when your direct referral makes a deposit. Example: $100 deposit = $12 commission for you.',
+      a: 'You earn 12% commission when your direct referral makes a deposit. Example: $50 deposit = $6 commission for you.',
     },
   ];
 
