@@ -39,7 +39,7 @@ export default function Bonus() {
   const required = bonus?.required ?? 3;
   const amount = bonus?.bonus_amount ?? 15;
   const minDeposit = bonus?.min_deposit_required ?? 50;
-  const awarded = bonus?.awarded_lifetime ?? bonus?.awarded_today ?? false;
+  const awarded = bonus?.awarded_today ?? bonus?.awarded_lifetime ?? false;
   const progress = Math.min(100, (count / required) * 100);
 
   return (
@@ -54,7 +54,7 @@ export default function Bonus() {
             <div>
               <h1 className="text-xl font-bold">Extra Bonus</h1>
               <p className="text-sm text-gray-400">
-                {required} referrals with ${minDeposit} deposit each
+                {required} referrals with ${minDeposit} deposit in 1 day
               </p>
             </div>
           </div>
@@ -101,7 +101,7 @@ export default function Bonus() {
           {awarded ? (
             <div className="flex items-center gap-2 rounded-xl border border-cs-green/30 bg-cs-green/10 p-4 text-cs-green">
               <CheckCircle size={20} />
-              <span className="text-sm font-semibold">Lifetime bonus already claimed!</span>
+              <span className="text-sm font-semibold">Today&apos;s bonus claimed! Try again tomorrow.</span>
             </div>
           ) : (
             <div className="rounded-xl border border-cs-border/50 bg-cs-dark/60 p-4">
@@ -110,9 +110,9 @@ export default function Bonus() {
                 How to earn
               </div>
               <p className="text-xs leading-relaxed text-gray-400">
-                Invite {required} members using your referral code. Each member must deposit
-                at least ${minDeposit} (approved by admin) to count toward your bonus.
-                When all {required} qualify, you receive ${amount} once — lifetime limit.
+                Invite {required} members using your referral code within the same day.
+                Each member must deposit at least ${minDeposit} (approved by admin) to count.
+                When all {required} qualify today, you receive ${amount} — resets daily.
               </p>
             </div>
           )}

@@ -15,6 +15,7 @@ const DEFAULT_SUPPORT = {
 export default function HelpSupport() {
   const { user } = useAuth();
   const [support, setSupport] = useState(DEFAULT_SUPPORT);
+  const [lockDays, setLockDays] = useState(30);
 
   useEffect(() => {
     userAPI.getSiteConfig().then(({ data }) => {
@@ -23,6 +24,7 @@ export default function HelpSupport() {
         support_subtitle: data.support_subtitle || DEFAULT_SUPPORT.support_subtitle,
         telegram_link: data.telegram_link || DEFAULT_SUPPORT.telegram_link,
       });
+      setLockDays(parseInt(data.investment_lock_days || 30, 10));
     }).catch(() => {});
   }, []);
 
@@ -44,7 +46,7 @@ export default function HelpSupport() {
     },
     {
       q: 'Can I withdraw my investment anytime?',
-      a: 'Profit can be withdrawn anytime. Your investment (deposit) is locked for 7 days before it can be withdrawn.',
+      a: `Profit can be withdrawn anytime. Your investment (deposit) is locked for ${lockDays} days before it can be withdrawn.`,
     },
     {
       q: 'What is referral commission?',

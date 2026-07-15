@@ -12,11 +12,10 @@ const statusStyle = {
   rejected: 'text-cs-red bg-cs-red/10',
 };
 
-const RULES = [
+const BASE_RULES = [
   'You cannot submit 2 withdrawals at once. Wait until your first withdrawal is completed.',
   'Withdrawals are processed within 24–72 hours.',
   'You can withdraw your profit anytime.',
-  'Investment is locked for 7 days — you cannot withdraw deposited amount for 7 days.',
   'Minimum withdrawal amount is $20.',
 ];
 
@@ -26,6 +25,7 @@ export default function Withdraw() {
   const [network, setNetwork] = useState('BEP20');
   const [walletAddress, setWalletAddress] = useState('');
   const [minWithdraw, setMinWithdraw] = useState(20);
+  const [lockDays, setLockDays] = useState(30);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
@@ -35,6 +35,11 @@ export default function Withdraw() {
   const withdrawable = parseFloat(user?.withdrawable_balance ?? user?.available_balance ?? 0);
   const locked = parseFloat(user?.locked_investment ?? 0);
   const hasPending = withdrawals.some((w) => w.status === 'pending');
+  const rules = [
+    ...BASE_RULES.slice(0, 3),
+    `Investment is locked for ${lockDays} days — you cannot withdraw deposited amount for ${lockDays} days.`,
+    ...BASE_RULES.slice(3),
+  ];
 
   const loadWithdrawals = async () => {
     try {
@@ -50,7 +55,10 @@ export default function Withdraw() {
   useEffect(() => {
     refreshUser();
     loadWithdrawals();
-    userAPI.getSiteConfig().then(({ data }) => setMinWithdraw(parseFloat(data.min_withdraw || 20))).catch(() => {});
+    userAPI.getSiteConfig().then(({ data }) => {
+      setMinWithdraw(parseFloat(data.min_withdraw || 20));
+      setLockDays(parseInt(data.investment_lock_days || 30, 10));
+    }).catch(() => {});
   }, [refreshUser]);
 
   const handleSubmit = async (e) => {
@@ -98,7 +106,7 @@ export default function Withdraw() {
               <p className="text-lg font-bold text-cs-green">${withdrawable.toFixed(2)}</p>
             </div>
             <div className="rounded-xl border border-cs-border bg-cs-dark p-3">
-              <p className="text-[10px] text-gray-500">Locked (7 days)</p>
+              <p className="text-[10px] text-gray-500">Locked ({lockDays} days)</p>
               <p className="text-lg font-bold text-cs-gold">${locked.toFixed(2)}</p>
             </div>
           </div>
@@ -113,7 +121,7 @@ export default function Withdraw() {
           <div className="mb-4 rounded-xl border border-cs-border/50 bg-cs-dark/60 p-4">
             <p className="mb-2 text-xs font-bold text-gray-300">Withdrawal Rules</p>
             <ul className="space-y-1.5">
-              {RULES.map((rule) => (
+              {rules.map((rule) => (
                 <li key={rule} className="flex gap-2 text-[10px] leading-relaxed text-gray-500">
                   <span className="text-cs-orange">•</span> {rule}
                 </li>

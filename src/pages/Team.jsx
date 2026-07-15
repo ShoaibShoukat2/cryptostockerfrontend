@@ -172,9 +172,9 @@ export default function Team() {
                   </p>
                 </div>
                 <div className="col-span-2 rounded-lg bg-black/30 p-2">
-                  <p className="text-gray-500">Your Total Deposit</p>
-                  <p className={`font-bold ${level.user_deposit >= level.deposit_required ? 'text-cs-green' : 'text-white'}`}>
-                    ${level.user_deposit.toFixed(2)} / ${level.deposit_required.toFixed(0)}
+                  <p className="text-gray-500">Team Total Deposit</p>
+                  <p className={`font-bold ${(level.team_deposit ?? level.user_deposit) >= level.deposit_required ? 'text-cs-green' : 'text-white'}`}>
+                    ${(level.team_deposit ?? level.user_deposit).toFixed(2)} / ${level.deposit_required.toFixed(0)}
                   </p>
                 </div>
               </div>

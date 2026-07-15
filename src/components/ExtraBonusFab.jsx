@@ -7,7 +7,7 @@ export default function ExtraBonusFab({ dailyBonus }) {
   const count = dailyBonus?.qualified_referrals ?? dailyBonus?.referrals_today ?? 0;
   const required = dailyBonus?.required ?? 3;
   const remaining = dailyBonus?.remaining ?? required;
-  const awarded = dailyBonus?.awarded_lifetime ?? dailyBonus?.awarded_today ?? false;
+  const awarded = dailyBonus?.awarded_today ?? dailyBonus?.awarded_lifetime ?? false;
 
   return (
     <motion.button
